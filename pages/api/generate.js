@@ -17,10 +17,7 @@ async function getWebsiteContent(url) {
   }
 }
 
-if (usageCount >= 3) {
-  alert("Free demo limit reached. Upgrade to continue.");
-  return;
-}
+
 
 setUsageCount(usageCount + 1);
 
