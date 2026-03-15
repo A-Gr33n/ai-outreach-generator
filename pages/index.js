@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
+import Papa from "papaparse";
 
 export default function Home() {
 
@@ -18,6 +19,9 @@ const [generatedEmail, setGeneratedEmail] = useState("");
 const [usageCount, setUsageCount] = useState(0);
 const [limitReached, setLimitReached] = useState(false);
 const [notification, setNotification] = useState("");
+
+const [leads, setLeads] = useState([]);
+const [generatedEmails, setGeneratedEmails] = useState([]);
 
 
 const generateEmail = async () => {
@@ -113,6 +117,56 @@ if (savedCount) {
 
 }, []);
 
+const handleFileUpload = (event) => {
+
+const file = event.target.files[0];
+
+Papa.parse(file, {
+header: true,
+complete: function(results) {
+
+setLeads(results.data);
+
+}
+});
+
+};
+
+const generateBulkEmails = async () => {
+
+let emails = [];
+
+for (let lead of leads) {
+
+const response = await fetch("/api/generate", {
+
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+
+body: JSON.stringify({
+name: lead.name,
+company: lead.company,
+website: lead.website,
+industry: lead.industry
+})
+
+});
+
+const data = await response.json();
+
+emails.push({
+...lead,
+email: data.email
+});
+
+}
+
+setGeneratedEmails(emails);
+
+};
+
 
 
 return (
@@ -159,6 +213,11 @@ value={targetRole}
 onChange={(e)=>setTargetRole(e.target.value)}
 />
 
+<input 
+type="file"
+accept=".csv"
+onChange={handleFileUpload}
+/>
 
 <select
 value={industry}
@@ -256,6 +315,49 @@ className="upgradeBtn"
 >
 Upgrade to Full Version
 </a>
+
+<button onClick={generateBulkEmails}>
+Generate Emails From CSV
+</button>
+
+{generatedEmails.map((lead, index) => (
+
+<div key={index} className="emailCard">
+
+<h3>{lead.name} - {lead.company}</h3>
+
+<p>{lead.email}</p>
+
+</div>
+
+))}
+
+const downloadCSV = () => {
+
+const rows = generatedEmails.map(lead => ({
+Name: lead.name,
+Company: lead.company,
+Email: lead.email
+}));
+
+const csv = Papa.unparse(rows);
+
+const blob = new Blob([csv], { type: "text/csv" });
+
+const url = URL.createObjectURL(blob);
+
+const a = document.createElement("a");
+
+a.href = url;
+a.download = "generated-outreach.csv";
+
+a.click();
+
+};
+
+<button onClick={downloadCSV}>
+Download Emails CSV
+</button>
 
 </div>
 
