@@ -2,78 +2,175 @@ import Navbar from "../components/Navbar";
 
 export default function Pricing() {
 
-  return (
-    <div>
+return (
 
-      <Navbar />
+<>
+<Navbar />
 
-      <div className="container">
+<div className="page">
 
-        <h1>Pricing</h1>
+<h1 className="title">Pricing</h1>
 
-        <div className="plans">
+<div className="pricingContainer">
 
-          <div className="plan">
-            <h2>Free</h2>
-            <p>£0 / month</p>
-            <ul>
-              <li>10 AI emails per month</li>
-              <li>Basic personalization</li>
-            </ul>
-          </div>
+<div className="grid">
 
-          <div className="plan featured">
-            <h2>Pro</h2>
-            <p>£29 / month</p>
-            <ul>
-              <li>Unlimited email generation</li>
-              <li>AI website research</li>
-              <li>3 email variations</li>
-            </ul>
-          </div>
+<div className="card">
 
-        </div>
+<h2>Free Demo</h2>
+<h3>£0</h3>
 
-      </div>
+<ul>
+<li>First 3 generators free</li>
+<li>AI generated outreach email</li>
+<li>Test the product</li>
+</ul>
+
+<button className="btn">Start Free</button>
+
+</div>
+
+
+<div className="card">
+
+<h2>Starter</h2>
+<h3>£19 / month</h3>
+
+<ul>
+<li>100 email generations</li>
+<li>AI company research</li>
+<li>Email copy & export</li>
+</ul>
+
+<button className="btn">Upgrade</button>
+
+</div>
+
+
+<div className="card">
+
+<h2>Pro</h2>
+<h3>£49 / month</h3>
+
+<ul>
+<li>Unlimited generators</li>
+<li>Bulk CSV email generator</li>
+<li>Campaign downloads</li>
+</ul>
+
+<button className="btn">Upgrade</button>
+
+</div>
+
+
+<div className="card">
+
+<h2>Agency</h2>
+<h3>£99 / month</h3>
+
+<ul>
+<li>Unlimited campaigns</li>
+<li>Bulk lead outreach</li>
+<li>Team usage</li>
+</ul>
+
+<button className="btn">Upgrade</button>
+
+</div>
+
+</div>
+
+</div>
 
 <style jsx>{`
 
-.container{
-padding-top:120px;
+.page{
+min-height:100vh;
+padding-top:110px;
+padding-left:20px;
+padding-right:20px;
+
 display:flex;
 flex-direction:column;
 align-items:center;
-font-family:sans-serif;
+
+background:#f5f7fb;
+font-family:Arial;
 }
 
-.plans{
+.title{
+margin-bottom:40px;
+}
+
+.pricingContainer{
 display:flex;
-gap:40px;
-margin-top:40px;
+justify-content:center;
+width:100%;
 }
 
-.plan{
+.grid{
+display:grid;
+grid-template-columns:repeat(2, 1fr);
+gap:30px;
+
+max-width:800px;
+width:100%;
+margin:auto;
+}
+
+.card{
 background:white;
 padding:30px;
 border-radius:12px;
-width:260px;
-box-shadow:0 10px 30px rgba(0,0,0,0.1);
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+
+text-align:center;
+
+max-width:320px;
+margin:auto;
+
+transition:transform 0.2s ease;
 }
 
-.featured{
-border:2px solid #6a7cff;
+.card:hover{
+transform:translateY(-5px);
 }
 
-h1{
-color:#333;
+h2{
+margin-bottom:5px;
+}
+
+h3{
+color:#4f46e5;
+margin-bottom:15px;
 }
 
 ul{
-margin-top:10px;
+text-align:left;
+padding-left:18px;
+margin-bottom:20px;
+}
+
+.btn{
+background:#4f46e5;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:6px;
+cursor:pointer;
+font-weight:600;
+}
+
+.btn:hover{
+background:#4338ca;
 }
 
 `}</style>
 
-    </div>
-  );
+</div>
+
+</>
+
+);
+
 }

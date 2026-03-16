@@ -1,148 +1,143 @@
 import Navbar from "../components/Navbar";
 
 export default function HowToUse() {
-  return (
-    <>
-      <Navbar />
 
-      <div className="container">
-        <div className="card">
+return (
 
-          <h1>How to Use the AI Sales Outreach Generator</h1>
+<>
+<Navbar />
 
-          <p className="intro">
-            This tool helps you generate personalized cold outreach emails in seconds.
-          </p>
+<div className="page">
 
-          <h2>Step 1 — Enter Prospect Details</h2>
+<h1>How to Use the AI Sales Outreach Generator</h1>
 
-          <p>Add the basic information about the person you want to contact:</p>
+<div className="grid">
 
-          <ul>
-            <li><b>Prospect Name</b> – the person you are emailing</li>
-            <li><b>Company Name</b> – the company they work for</li>
-            <li><b>Company Website</b> – used by AI to research the business</li>
-            <li><b>Target Role</b> – job title like Head of Sales or Founder</li>
-            <li><b>Industry</b> – helps the AI tailor the message</li>
-          </ul>
+<div className="card">
 
-          <h2>Step 2 — Describe Your Product</h2>
+<h2>Single Email Generator</h2>
 
-          <p>
-            Tell the AI what you are selling. This helps the system write relevant
-            outreach emails.
-          </p>
+<p>Fill in these fields:</p>
 
-          <p className="example">
-            Example: <br />
-            “AI software that helps sales teams automate prospect research and
-            write personalized outreach emails.”
-          </p>
+<ul>
+<li><b>Contact Name</b> – Person you are emailing</li>
+<li><b>Company</b> – Their company</li>
+<li><b>Company Website</b> – Helps AI understand the business</li>
+<li><b>Industry</b> – Industry the company operates in</li>
+</ul>
 
-          <h2>Step 3 — Choose Tone & Length</h2>
+<p>
+Click <b>Generate Email</b> and the AI will instantly create a personalised outreach email.
+</p>
 
-          <p>You can control how the email sounds:</p>
+</div>
 
-          <ul>
-            <li><b>Friendly</b> – casual and conversational</li>
-            <li><b>Professional</b> – formal and corporate</li>
-            <li><b>Short</b> – quick outreach message</li>
-            <li><b>Long</b> – more detailed email</li>
-          </ul>
+<div className="card">
 
-          <h2>Step 4 — Generate Email</h2>
+<h2>Bulk Email Generator</h2>
 
-          <p>
-            Click <b>Generate Email</b> and the AI will instantly create a personalized
-            outreach email based on the information you entered.
-          </p>
+<p>Generate emails for many leads at once.</p>
 
-          <h2>Step 5 — Copy and Send</h2>
+<ol>
+<li>Prepare a CSV file</li>
+<li>Upload the CSV file</li>
+<li>Click <b>Generate Emails From CSV</b></li>
+<li>The AI generates emails for each lead</li>
+<li>Download all emails as a CSV</li>
+</ol>
 
-          <p>
-            Copy the generated email and send it through your email outreach
-            platform or CRM.
-          </p>
+<h3>Example CSV</h3>
 
-        </div>
-      </div>
+<pre>
+name,company,website,industry
+John Smith,TechFlow,techflow.com,SaaS
+Sarah Jones,BuildCorp,buildcorp.com,Construction
+</pre>
 
-      <style jsx>{`
+</div>
 
-        .container{
-min-height:100vh;
-background:linear-gradient(135deg,#6a7cff,#7a3cff);
-display:flex;
-justify-content:center;
-padding-top:110px;
-padding-bottom:80px;
-padding-left:20px;
-padding-right:20px;
-box-sizing:border-box;
-}
+<div className="card">
+
+<h2>Tips for Best Results</h2>
+
+<ul>
+<li>Use accurate company websites</li>
+<li>Include the correct industry</li>
+<li>Target decision makers</li>
+<li>Review emails before sending</li>
+</ul>
+
+</div>
+
+</div>
+
+<style jsx>{`
 
 .page{
 min-height:100vh;
-background:linear-gradient(135deg,#5f5cff,#8a5cff);
+padding-top:110px;
+background:#f5f7fb;
+font-family:Arial;
+
 display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+}
+
+h1{
+margin-bottom:30px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:20px;
+max-width:900px;
+width:100%;
+margin:0 auto;
 justify-content:center;
-align-items:flex-start;
-padding-top:120px;
-padding-bottom:60px;
-overflow-y:auto;
 }
 
 .card{
 background:white;
-max-width:600px;
-width:100%;
-padding:32px;
-border-radius:14px;
-box-shadow:0 18px 50px rgba(0,0,0,0.18);
-line-height:1.6;
-margin:auto;
+padding:20px;
+border-radius:10px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+transition:transform 0.2s ease;
 }
 
-.example{
-background:#f4f6ff;
-padding:16px;
-border-radius:8px;
-margin-top:10px;
-font-style:italic;
+.card:hover{
+transform:translateY(-4px);
 }
 
-        h1{
-          margin-bottom:8px;
-font-size:28px;
-        }
+h2{
+margin-bottom:10px;
+font-size:18px;
+}
 
-        .intro{
-          margin-bottom:25px;
-          color:#555;
-        }
+ul{
+padding-left:18px;
+}
 
-        h2{
-          margin-top:24px;
-margin-bottom:8px;
-font-size:20px;
-        }
+ol{
+padding-left:18px;
+}
 
-        ul{
-          padding-left:20px;
-        }
+pre{
+background:#f3f4f6;
+padding:10px;
+border-radius:6px;
+font-size:13px;
+overflow-x:auto;
+}
 
-        li{
-          margin-bottom:8px;
-        }
+`}</style>
 
-        .example{
-          background:#f4f6ff;
-          padding:15px;
-          border-radius:8px;
-          margin-top:10px;
-        }
+</div>
 
-      `}</style>
-    </>
-  );
+</>
+
+);
+
 }
