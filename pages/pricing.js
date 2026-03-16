@@ -26,7 +26,11 @@ return (
 <li>Test the product</li>
 </ul>
 
-<button className="btn">Start Free</button>
+
+
+ <a href="/" className="btn">
+Start Free
+</a>
 
 </div>
 
@@ -36,13 +40,22 @@ return (
 <h2>Starter</h2>
 <h3>£19 / month</h3>
 
+
+
 <ul>
 <li>100 email generations</li>
 <li>AI company research</li>
 <li>Email copy & export</li>
 </ul>
 
-<button className="btn">Upgrade</button>
+<a 
+href="https://buy.stripe.com/test_3cI00j7xq88QboxbDE5kk01"
+target="_blank"
+className="btn"
+>
+Upgrade
+</a>
+
 
 </div>
 
@@ -58,7 +71,14 @@ return (
 <li>Campaign downloads</li>
 </ul>
 
-<button className="btn">Upgrade</button>
+<a 
+href="https://buy.stripe.com/test_bJe4gz1924WE2S1dLM5kk02"
+target="_blank"
+className="btn"
+>
+Upgrade
+</a>
+
 
 </div>
 
@@ -74,7 +94,14 @@ return (
 <li>Team usage</li>
 </ul>
 
-<button className="btn">Upgrade</button>
+<a 
+href="https://buy.stripe.com/test_fZu6oH9Fy3SAfEN2345kk03"
+target="_blank"
+className="btn"
+>
+Upgrade
+</a>
+
 
 </div>
 
@@ -155,10 +182,14 @@ margin-bottom:20px;
 background:#4f46e5;
 color:white;
 border:none;
-padding:10px 16px;
-border-radius:6px;
+padding:12px 18px;
+border-radius:8px;
 cursor:pointer;
 font-weight:600;
+
+display:block;
+text-align:center;
+text-decoration:none;
 }
 
 .btn:hover{
@@ -171,6 +202,34 @@ background:#4338ca;
 
 </>
 
+
 );
 
 }
+
+const plans = {
+free: {
+limit: 3,
+bulk: false,
+research: false
+},
+
+starter: {
+limit: 100,
+bulk: false,
+research: true
+},
+
+pro: {
+limit: Infinity,
+bulk: true,
+research: true
+},
+
+agency: {
+limit: Infinity,
+bulk: true,
+research: true,
+team: true
+}
+};

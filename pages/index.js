@@ -36,10 +36,29 @@ setLimitReached(true);
 
 const generateEmail = async () => {
 
-if(usageCount >= 3){
-setLimitReached(true);
-alert("Free demo limit reached. Upgrade to continue.");
+  const limits = {
+free:3,
+starter:100,
+pro:Infinity,
+agency:Infinity
+};
+
+if(usageCount >= limits[plan]){
+alert("Generation limit reached. Upgrade your plan.");
 return;
+}
+
+if(savedPlan){
+setPlan(savedPlan);
+}
+
+if(plan === "free" || plan === "starter"){
+alert("Bulk generator available on Pro plan.");
+return;
+}
+
+if(plan === "free"){
+companySummary = "";
 }
 
 const response = await fetch("/api/generate",{
@@ -133,6 +152,15 @@ email:data.email
 });
 
 }
+
+const [plan,setPlan] = useState("free");
+
+useEffect(()=>{
+
+const savedPlan = localStorage.getItem("plan");
+
+
+},[]);
 
 setGeneratedEmails(emails);
 
