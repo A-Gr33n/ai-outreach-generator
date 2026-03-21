@@ -7,6 +7,8 @@ return (
 <>
 <Navbar />
 
+<a href="/account">Account</a>
+
 <div className="page">
 
 <h1 className="title">Pricing</h1>

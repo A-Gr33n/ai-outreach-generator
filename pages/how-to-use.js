@@ -6,6 +6,7 @@ return (
 
 <>
 <Navbar />
+<a href="/account">Account</a>
 
 <div className="page">
 

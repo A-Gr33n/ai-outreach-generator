@@ -159,8 +159,22 @@ useEffect(()=>{
 
 const savedPlan = localStorage.getItem("plan");
 
-
 },[]);
+
+{
+  const params = new URLSearchParams(window.location.search);
+
+  const success = params.get("success");
+  const newPlan = params.get("plan");
+
+  if (success && newPlan) {
+    localStorage.setItem("plan", newPlan);
+    setPlan(newPlan);
+
+    // optional clean URL
+    window.history.replaceState({}, document.title, "/");
+  }
+}
 
 setGeneratedEmails(emails);
 
@@ -171,6 +185,7 @@ setNotification("");
 },3000);
 
 };
+
 
 const downloadCSV = () => {
 
@@ -199,8 +214,10 @@ return (
 
 <>
 <Navbar />
+<a href="/account">Account</a>
 
 <div className="page">
+
 
 <h1>AI Sales Outreach Generator</h1>
 
