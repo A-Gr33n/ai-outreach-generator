@@ -21,18 +21,11 @@ export default function Account() {
     }
   };
 
+  
+
   return (
     <>
-      {/* ✅ NAVBAR */}
-        <div className="navbar">
-        <div className="logo">AI Outreach</div>
-        <div className="nav-links">
-          <a href="/">Home</a>
-          <a href="/how-to-use">How to Use</a>
-          <a href="/pricing">Pricing</a>
-          <a href="/account">Account</a>
-        </div>
-      </div>
+     
       {/* ✅ MAIN CONTENT */}
       <div className="main">
         <h1>Manage Subscription</h1>

@@ -1,144 +1,78 @@
-import Navbar from "../components/Navbar";
-
 export default function HowToUse() {
+  return (
+    <div className="container">
+      <h1 style={{ marginBottom: "40px" }}>
+        How to Use the AI Sales Outreach Generator
+      </h1>
 
-return (
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 2fr 1fr",
+        gap: "20px",
+        alignItems: "stretch"
+      }}>
+        
+        {/* LEFT COLUMN */}
+        <div className="card">
+          <h3>Single Email</h3>
+          <p style={{ marginTop: "10px" }}>Fill in:</p>
 
-<>
-<Navbar />
-<a href="/account">Account</a>
+          <ul style={{ textAlign: "left", marginTop: "10px" }}>
+            <li><strong>Contact Name</strong> – who you're emailing</li>
+            <li><strong>Company</strong> – their company</li>
+            <li><strong>Website</strong> – company site</li>
+            <li><strong>Industry</strong> – your business </li>
+          </ul>
+        </div>
 
-<div className="page">
+        {/* CENTER COLUMN */}
+        <div className="card">
+          <h3>Bulk Email Generator</h3>
 
-<h1>How to Use the AI Sales Outreach Generator</h1>
+          <ol style={{
+            textAlign: "left",
+            marginTop: "15px",
+            lineHeight: "1.8"
+          }}>
+            <li>Prepare a CSV file</li>
+            <li>Upload the CSV file</li>
+            <li>Click <strong>Generate Emails From CSV</strong></li>
+            <li>The AI generates emails for each lead</li>
+            <li>Download all emails as a CSV</li>
+          </ol>
 
-<div className="grid">
+          <div style={{
+            marginTop: "20px",
+            background: "#f3f4f6",
+            padding: "10px",
+            borderRadius: "8px",
+            fontSize: "14px",
+            textAlign: "left"
+          }}>
+            <strong>Example CSV:</strong><br />
+            name,company,website,industry<br />
+            John Smith,TechFlow,techflow.com,SaaS<br />
+            Sarah Jones,BuildCorp,buildcorp.com,Construction
+          </div>
+        </div>
 
-<div className="card">
+        {/* RIGHT COLUMN */}
+        <div className="card">
+          <h3>Tips</h3>
 
-<h2>Single Email Generator</h2>
+          <ul style={{
+            textAlign: "left",
+            marginTop: "10px",
+            lineHeight: "1.8"
+          }}>
+            <li>Use accurate company data</li>
+            <li>Choose correct industry</li>
+            <li>Target decision-makers</li>
+            <li>Review emails before sending</li>
+          </ul>
+        </div>
 
-<p>Fill in these fields:</p>
-
-<ul>
-<li><b>Contact Name</b> – Person you are emailing</li>
-<li><b>Company</b> – Their company</li>
-<li><b>Company Website</b> – Helps AI understand the business</li>
-<li><b>Industry</b> – Industry the company operates in</li>
-</ul>
-
-<p>
-Click <b>Generate Email</b> and the AI will instantly create a personalised outreach email.
-</p>
-
-</div>
-
-<div className="card">
-
-<h2>Bulk Email Generator</h2>
-
-<p>Generate emails for many leads at once.</p>
-
-<ol>
-<li>Prepare a CSV file</li>
-<li>Upload the CSV file</li>
-<li>Click <b>Generate Emails From CSV</b></li>
-<li>The AI generates emails for each lead</li>
-<li>Download all emails as a CSV</li>
-</ol>
-
-<h3>Example CSV</h3>
-
-<pre>
-name,company,website,industry
-John Smith,TechFlow,techflow.com,SaaS
-Sarah Jones,BuildCorp,buildcorp.com,Construction
-</pre>
-
-</div>
-
-<div className="card">
-
-<h2>Tips for Best Results</h2>
-
-<ul>
-<li>Use accurate company websites</li>
-<li>Include the correct industry</li>
-<li>Target decision makers</li>
-<li>Review emails before sending</li>
-</ul>
-
-</div>
-
-</div>
-
-<style jsx>{`
-
-.page{
-min-height:100vh;
-padding-top:110px;
-background:#f5f7fb;
-font-family:Arial;
-
-display:flex;
-flex-direction:column;
-align-items:center;
-text-align:center;
-}
-
-h1{
-margin-bottom:30px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:20px;
-max-width:900px;
-width:100%;
-margin:0 auto;
-justify-content:center;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
-transition:transform 0.2s ease;
-}
-
-.card:hover{
-transform:translateY(-4px);
-}
-
-h2{
-margin-bottom:10px;
-font-size:18px;
-}
-
-ul{
-padding-left:18px;
-}
-
-ol{
-padding-left:18px;
-}
-
-pre{
-background:#f3f4f6;
-padding:10px;
-border-radius:6px;
-font-size:13px;
-overflow-x:auto;
-}
-
-`}</style>
-
-</div>
-
-</>
-
-);
-
+      </div>
+    </div>
+  );
 }
