@@ -21,14 +21,28 @@ export default function Account() {
     }
   };
 
-  
+  // ✅ Define the button style here in JS
+  const upgradeBtn = {
+    marginTop: "15px",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "none",
+    background: "linear-gradient(90deg, #5a67d8, #805ad5)",
+    color: "#fff",
+    fontWeight: "bold",
+    cursor: "pointer",
+    width: "100%",
+    maxWidth: "320px",
+  };
 
   return (
     <>
-     
-      {/* ✅ MAIN CONTENT */}
       <div className="main">
         <h1>Manage Subscription</h1>
+
+        <p style={{ marginTop: "10px", color: "#666" }}>
+          Upgrade anytime to unlock more features
+        </p>
 
         <div className="container">
           <input
@@ -37,12 +51,18 @@ export default function Account() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
+          <button
+            onClick={() => (window.location.href = "/pricing")}
+            style={upgradeBtn}
+          >
+            Manage Subscription / Upgrade
+          </button>
+
           <button onClick={manageSubscription}>
             Manage Subscription
           </button>
 
           <p className="hint">Use the same email you used to subscribe</p>
-
           <p>Cancel or update your plan anytime.</p>
         </div>
       </div>
@@ -57,27 +77,6 @@ export default function Account() {
           font-family: Arial;
         }
 
-        /* NAVBAR */
-        .navbar {
-          display: flex;
-          justify-content: space-between;
-          padding: 15px 30px;
-          background: white;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .logo {
-          color: #5a67ff;
-          font-weight: bold;
-        }
-
-        .nav-links a {
-          margin-left: 20px;
-          text-decoration: none;
-          color: #333;
-        }
-
-        /* MAIN */
         .main {
           height: calc(100vh - 70px);
           display: flex;
@@ -90,7 +89,6 @@ export default function Account() {
           margin-bottom: 20px;
         }
 
-        /* CONTAINER */
         .container {
           background: white;
           padding: 30px;
@@ -98,7 +96,6 @@ export default function Account() {
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
           width: 100%;
           max-width: 420px;
-
           display: flex;
           flex-direction: column;
           gap: 15px;

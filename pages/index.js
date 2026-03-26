@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import Papa from "papaparse";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -13,7 +14,7 @@ export default function Home() {
 
   const fileInputRef = useRef();
 
-  // ✅ Check & reset usage every 30 days
+  // ✅ Reset usage every 30 days
   const checkAndResetUsage = () => {
     const savedDate = localStorage.getItem("lastResetDate");
 
@@ -59,6 +60,17 @@ export default function Home() {
     }
   };
 
+  // ✅ Feature control
+  const hasFeature = (feature) => {
+    const features = {
+      FREE: [],
+      STARTER: [],
+      PRO: ["bulk", "download"],
+      AGENCY: ["bulk", "download", "team"],
+    };
+    return features[plan]?.includes(feature);
+  };
+
   // ✅ Generate email
   const handleGenerate = async () => {
     if (usageCount >= getLimit()) {
@@ -85,7 +97,6 @@ export default function Home() {
       const data = await res.json();
       setEmail(data.email);
 
-      // ✅ Save usage
       setUsageCount((prev) => {
         const newCount = prev + 1;
         localStorage.setItem("usageCount", newCount.toString());
@@ -99,101 +110,138 @@ export default function Home() {
     setLoading(false);
   };
 
-  // ✅ Bulk upload (PRO only)
   const handleFileUpload = (e) => {
-    if (plan === "FREE" || plan === "STARTER") {
-      alert("🚫 Bulk CSV is only available on PRO and AGENCY plans");
+  if (!hasFeature("bulk")) {
+    alert("🚫 Bulk CSV only available on PRO & AGENCY");
+    return;
+  }
+
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setFileName(file.name);
+
+  Papa.parse(file, {
+    header: true,
+    complete: async (results) => {
+      try {
+        const res = await fetch("http://localhost:5000/api/bulk-generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ leads: results.data }),
+        });
+
+        const data = await res.json();
+
+        downloadCSV(data.results);
+      } catch (err) {
+        alert("Bulk generation failed");
+      }
+    },
+  });
+};
+
+  // ✅ Download campaign
+  const handleDownload = () => {
+    if (!hasFeature("download")) {
+      alert("🚫 Upgrade to PRO for downloads");
       return;
     }
 
-    const file = e.target.files[0];
-    if (!file) return;
+    const blob = new Blob([email], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
 
-    setFileName(file.name);
-    alert(`Uploaded: ${file.name}`);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "campaign.txt";
+    a.click();
   };
+
+  const downloadCSV = (rows) => {
+  const csv = [
+    ["Name", "Company", "Email"],
+    ...rows.map(r => [r.name, r.company, r.email])
+  ]
+    .map(e => e.join(","))
+    .join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "bulk_emails.csv";
+  a.click();
+};
 
   return (
     <div className="container">
       <h1>AI Sales Outreach Generator</h1>
 
-      {/* PLAN DISPLAY */}
+      {/* PLAN */}
       <p className="plan-box">
         Current Plan: <strong>{plan}</strong>
       </p>
 
-      {/* FREE MESSAGE */}
+      {/* PLAN INFO */}
       {plan === "FREE" && (
         <p className="info-box">
           🎉 First 3 emails are free. Upgrade for more.
         </p>
       )}
 
-      {/* STARTER USAGE */}
       {plan === "STARTER" && (
         <p className="info-box">
           Emails left this month: <strong>{100 - usageCount}</strong>
         </p>
       )}
 
+      {plan === "PRO" && (
+        <p className="info-box">
+          ✅ Unlimited emails + Bulk CSV + Downloads enabled
+        </p>
+      )}
+
+      {plan === "AGENCY" && (
+        <p className="info-box">
+          🚀 Full access: Bulk outreach + Team features
+        </p>
+      )}
+
       {/* FORM */}
       <div className="card">
-        <input
-          className="input"
-          placeholder="Contact Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <input className="input" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+        <input className="input" placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)} />
+        <input className="input" placeholder="Website" value={website} onChange={(e) => setWebsite(e.target.value)} />
+        <input className="input" placeholder="Industry" value={industry} onChange={(e) => setIndustry(e.target.value)} />
 
-        <input
-          className="input"
-          placeholder="Company"
-          value={company}
-          onChange={(e) => setCompany(e.target.value)}
-        />
-
-        <input
-          className="input"
-          placeholder="Website"
-          value={website}
-          onChange={(e) => setWebsite(e.target.value)}
-        />
-
-        <input
-          className="input"
-          placeholder="Industry"
-          value={industry}
-          onChange={(e) => setIndustry(e.target.value)}
-        />
-
-        {/* GENERATE BUTTON */}
         <button className="button" onClick={handleGenerate} disabled={loading}>
           {loading ? "Generating..." : "Generate Email"}
         </button>
 
-        {/* BULK BUTTON */}
+        {/* BULK */}
         <button
           className="button-secondary"
-          disabled={plan === "FREE" || plan === "STARTER"}
-          onClick={() => {
-            if (plan === "FREE" || plan === "STARTER") {
-              alert("🚫 Bulk CSV is only available on PRO and AGENCY plans");
-              return;
-            }
-            fileInputRef.current.click();
-          }}
+          disabled={!hasFeature("bulk")}
+          onClick={() => fileInputRef.current.click()}
         >
           Bulk Generate (CSV)
         </button>
 
-        {/* LOCK MESSAGE */}
-        {(plan === "FREE" || plan === "STARTER") && (
-          <p style={{ fontSize: "12px", color: "gray", marginTop: "5px" }}>
-            🔒 Available on PRO & AGENCY plans only
+        {!hasFeature("bulk") && (
+          <p style={{ fontSize: "12px", color: "gray" }}>
+            🔒 Available on PRO & AGENCY
           </p>
         )}
 
-        {/* FILE INPUT */}
+        {hasFeature("bulk") && (
+          <p style={{ fontSize: "12px", color: "gray" }}>
+            Upload CSV to generate multiple emails
+          </p>
+        )}
+
         <input
           type="file"
           accept=".csv"
@@ -206,14 +254,53 @@ export default function Home() {
 
         {/* OUTPUT */}
         {email && (
-          <textarea
-            className="textarea"
-            rows={10}
-            value={email}
-            readOnly
-          />
+          <>
+            <textarea className="textarea" rows={10} value={email} readOnly />
+
+            {hasFeature("download") && (
+              <button className="button-secondary" onClick={handleDownload}>
+                📥 Download Campaign
+              </button>
+            )}
+          </>
         )}
       </div>
+
+      {/* AGENCY FEATURES */}
+      {plan === "AGENCY" && (
+        <div style={{
+          marginTop: "25px",
+          padding: "20px",
+          background: "#eef2ff",
+          borderRadius: "12px"
+        }}>
+          <h3>🚀 Agency Tools</h3>
+
+          <button
+            className="button"
+            onClick={() => alert("Bulk outreach started (demo)")}
+          >
+            Run Bulk Outreach Campaign
+          </button>
+
+          <p style={{ fontSize: "13px" }}>
+            Send campaigns to multiple leads at once
+          </p>
+
+          <div style={{
+            marginTop: "15px",
+            padding: "15px",
+            background: "#f9fafb",
+            borderRadius: "10px"
+          }}>
+            <h4>👥 Team Usage</h4>
+            <p>3 team members active</p>
+            <p style={{ fontSize: "12px", color: "gray" }}>
+              Manage access and collaborate
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
