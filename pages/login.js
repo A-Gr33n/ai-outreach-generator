@@ -1,104 +1,102 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Login() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleLogin = () => {
-    setError("");
+const handleLogin = () => {
+  if (!email) {
+    alert("Enter email");
+    return;
+  }
 
-    if (!email) {
-      setError("Please enter your email");
-      return;
-    }
-
-    setLoading(true);
-
-    // Simulate login (no backend yet)
-    setTimeout(() => {
-      // Save user to localStorage
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          email: email,
-          plan: "free", // default plan
-          emailsUsed: 0,
-          resetDate: new Date().toISOString(),
-        })
-      );
-
-      // Redirect to homepage
-      window.location.href = "/";
-    }, 800);
+  const user = {
+    email,
+    plan: "free",
   };
 
+  localStorage.setItem("user", JSON.stringify(user));
+
+  // ✅ FORCE UI UPDATE
+  window.location.href = "/";
+};
+
   return (
-    <div style={container}>
-      <div style={card}>
-        <h2 style={{ marginBottom: "20px" }}>Login</h2>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <h2>Login / Register</h2>
 
         <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
+          placeholder="Email"
+          style={styles.input}
           onChange={(e) => setEmail(e.target.value)}
-          style={input}
         />
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          style={button}
-        >
-          {loading ? "Logging in..." : "Login"}
+        <button style={styles.button} onClick={handleLogin}>
+          Continue
         </button>
-
-        <p style={{ marginTop: "15px", fontSize: "14px", color: "#666" }}>
-          Demo login — no password required
-        </p>
       </div>
     </div>
   );
 }
 
-//////////////////////////////////////////////////////
-// STYLES
-//////////////////////////////////////////////////////
+const styles = {
+  container: {
+    minHeight: "60vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundImage: "url('/background.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  },
 
-const container = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "80vh",
-};
+  overlay: {
+    width: "100%",
+    minHeight: "100vh",
+    background: "rgba(255,255,255,0.85)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
-const card = {
-  width: "350px",
-  padding: "30px",
-  borderRadius: "12px",
-  background: "#fff",
-  boxShadow: "0 5px 20px rgba(0,0,0,0.1)",
-  textAlign: "center",
-};
+  card: {
+    width: "100%",
+    maxWidth: "400px",
+    padding: "30px",
+    borderRadius: "12px",
+    background: "#fff",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center", // ✅ centers children
+    gap: "15px",
+  },
 
-const input = {
-  width: "100%",
-  padding: "12px",
-  marginBottom: "15px",
-  borderRadius: "8px",
-  border: "1px solid #ccc",
-};
+  title: {
+    fontSize: "24px",
+    marginBottom: "10px",
+  },
 
-const button = {
-  width: "100%",
-  padding: "12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "linear-gradient(90deg, #5a67d8, #805ad5)",
-  color: "#fff",
-  fontWeight: "bold",
-  cursor: "pointer",
+  input: {
+    width: "80%",              // ✅ smaller width
+    margin: "0 auto",          // ✅ centered
+    padding: "12px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+    textAlign: "center",       // ✅ centered text
+  },
+
+  button: {
+    width: "80%",              // ✅ matches input
+    margin: "0 auto",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "none",
+    background: "linear-gradient(135deg, #4b4ded, #7a5cff)",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
 };

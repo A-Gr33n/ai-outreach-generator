@@ -1,133 +1,150 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Account() {
-  const [email, setEmail] = useState("");
+  const [user, setUser] = useState(null);
+  const router = useRouter();
 
-  const manageSubscription = async () => {
-    const res = await fetch("/api/portal", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email }),
-    });
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
 
-    const data = await res.json();
-
-    if (data.url) {
-      window.location.href = data.url;
+    if (!stored) {
+      router.push("/login");
     } else {
-      alert(data.error || "Something went wrong");
+      setUser(JSON.parse(stored));
     }
-  };
+  }, []);
 
-  // ✅ Define the button style here in JS
-  const upgradeBtn = {
-    marginTop: "15px",
-    padding: "12px",
-    borderRadius: "8px",
-    border: "none",
-    background: "linear-gradient(90deg, #5a67d8, #805ad5)",
-    color: "#fff",
-    fontWeight: "bold",
-    cursor: "pointer",
-    width: "100%",
-    maxWidth: "320px",
-  };
+  if (!user) return null;
 
   return (
-    <>
-      <div className="main">
-        <h1>Manage Subscription</h1>
+    <div style={styles.page}>
+      <div style={styles.overlay}>
+        <div style={styles.container}>
+          <h1 style={styles.title}>My Account</h1>
 
-        <p style={{ marginTop: "10px", color: "#666" }}>
-          Upgrade anytime to unlock more features
-        </p>
+          <div style={styles.card}>
+            {/* USER INFO */}
+            <div style={styles.info}>
+              <p><strong>Email:</strong> {user.email}</p>
+              <p>
+                <strong>Plan:</strong>{" "}
+                <span style={styles.planBadge}>
+                  {user.plan.toUpperCase()}
+                </span>
+              </p>
+            </div>
 
-        <div className="container">
-          <input
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            {/* ACTIONS */}
+            <div style={styles.actions}>
+              <button
+                style={styles.primaryBtn}
+                onClick={() => router.push("/pricing")}
+              >
+                Manage Subscription
+              </button>
 
-          <button
-            onClick={() => (window.location.href = "/pricing")}
-            style={upgradeBtn}
-          >
-            Manage Subscription / Upgrade
-          </button>
-
-          <button onClick={manageSubscription}>
-            Manage Subscription
-          </button>
-
-          <p className="hint">Use the same email you used to subscribe</p>
-          <p>Cancel or update your plan anytime.</p>
+              <button
+                style={styles.logoutBtn}
+                onClick={() => {
+                  localStorage.removeItem("user");
+                  router.push("/");
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
-      <a href="/account">Account</a>
-
-      {/* ✅ STYLES */}
-      <style jsx>{`
-        body {
-          margin: 0;
-          background: #f5f6f8;
-          font-family: Arial;
-        }
-
-        .main {
-          height: calc(100vh - 70px);
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        h1 {
-          margin-bottom: 20px;
-        }
-
-        .container {
-          background: white;
-          padding: 30px;
-          border-radius: 16px;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-          width: 100%;
-          max-width: 420px;
-          display: flex;
-          flex-direction: column;
-          gap: 15px;
-          align-items: center;
-        }
-
-        input {
-          width: 100%;
-          max-width: 320px;
-          padding: 12px;
-          border-radius: 8px;
-          border: 1px solid #ddd;
-        }
-
-        button {
-          width: 100%;
-          max-width: 320px;
-          padding: 12px;
-          border-radius: 8px;
-          background: linear-gradient(90deg, #5a67ff, #6b73ff);
-          color: white;
-          font-weight: bold;
-          border: none;
-          cursor: pointer;
-        }
-
-        p {
-          font-size: 13px;
-          color: #666;
-          text-align: center;
-        }
-      `}</style>
-    </>
+    </div>
   );
 }
+
+// ---------------- STYLES ----------------
+
+const styles = {
+  page: {
+    minHeight: "30vh",
+    backgroundImage: "url('/background.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  },
+
+  overlay: {
+    width: "100%",
+    minHeight: "100vh",
+    background: "rgba(255,255,255,0.85)",
+    display: "flex",
+    flexDirection: "column", // ✅ important
+    alignItems: "center",
+    paddingTop: "80px", // ✅ pushes title down from very top
+  },
+
+  container: {
+    width: "100%",
+    maxWidth: "500px",
+    marginTop: "40px", // ✅ space between title and card
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+    alignItems: "center",
+  },
+
+  title: {
+    fontSize: "32px",
+    textAlign: "center",
+  },
+
+  card: {
+    width: "100%", // ✅ ensures proper centering
+    background: "#fff",
+    padding: "30px",
+    borderRadius: "12px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "25px",
+  },
+
+  info: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+
+  planBadge: {
+    background: "#4b4ded",
+    color: "#fff",
+    padding: "5px 10px",
+    borderRadius: "6px",
+    fontSize: "12px",
+    marginLeft: "5px",
+  },
+
+  actions: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
+
+  primaryBtn: {
+    padding: "14px",
+    borderRadius: "10px",
+    border: "none",
+    background: "linear-gradient(135deg, #4b4ded, #7a5cff)",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+
+  logoutBtn: {
+    padding: "14px",
+    borderRadius: "10px",
+    border: "none",
+    background: "#ff4d4d",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+};
