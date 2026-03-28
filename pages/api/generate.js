@@ -1,47 +1,55 @@
-const { name, company, website, role, industry, product, tone, length } = req.body;
-import OpenAI from "openai";
-import axios from "axios";
-import cheerio from "cheerio";
-
-async function getWebsiteContent(url) {
+app.post("/api/generate", async (req, res) => {
   try {
-    const { data } = await axios.get(url);
+    const { name, company, industry } = req.body;
 
-    const $ = cheerio.load(data);
+    const prompt = `
+Write ONE unique cold outreach email.
 
-    const text = $("body").text();
+- Include subject line
+- Mention ${company}
+- Address ${name}
+- Be 120–180 words
+- Sound natural and human
 
-    return text.slice(0, 2000);
-  } catch (error) {
-    return "Could not read website content.";
-  }
-}
-
-
-
-setUsageCount(usageCount + 1);
-
-const websiteText = await getWebsiteContent(website);
-
-const prompt = `
-You are an AI sales assistant.
-
-Here is information about the company website:
-
-${websiteText}
-
-Write 3 personalized cold outreach emails.
-
-Prospect: ${name}
-Company: ${company}
-Role: ${role}
-
-Product being offered:
-${product}
-
-Each email should:
-- reference the company
-- be under 120 words
-- include a subject line
-- feel natural and personalized
+Return only the email.
 `;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 1,
+    });
+
+    console.log("🔍 FULL RESPONSE:", JSON.stringify(response, null, 2));
+
+    const email = response?.choices?.[0]?.message?.content;
+
+    // 🔥 FIX: ALWAYS RETURN SOMETHING
+    if (!email) {
+      console.log("⚠️ No email from AI, using fallback");
+
+      return res.json({
+        email: `Subject: Quick idea for ${company}
+
+Hi ${name},
+
+I came across ${company} and wanted to reach out. I believe there’s an opportunity to improve outreach and engagement.
+
+Would you be open to a quick chat?
+
+Best regards,  
+Your Name`,
+      });
+    }
+
+    res.json({ email });
+
+  } catch (err) {
+    console.error("❌ SERVER ERROR:", err);
+
+    // 🔥 NEVER BREAK FRONTEND
+    res.json({
+      email: "Error generating email. Please try again.",
+    });
+  }
+});

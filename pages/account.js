@@ -66,7 +66,6 @@ export default function Account() {
 const styles = {
   page: {
     minHeight: "30vh",
-    backgroundImage: "url('/background.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
   },

@@ -19,7 +19,7 @@ export default function Navbar() {
         <Link href="/pricing">Pricing</Link>
 
         {user && <Link href="/account">Account</Link>}
-        {!user && <Link href="/login">Login</Link>}
+        {!user && <Link href="/login">Login/Register</Link>}
       </div>
     </nav>
   );

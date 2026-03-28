@@ -1,116 +1,131 @@
-let usageCount = 0;
-const MAX_FREE = 3;
-
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const OpenAI = require("openai");
 
-dotenv.config();
-
+// ✅ CREATE APP FIRST
 const app = express();
+
+// ✅ MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
+// ✅ OPENAI SETUP
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// ✅ TEST ROUTE
+app.get("/", (req, res) => {
+  res.send("🚀 API is running...");
+});
+
+// ✅ GENERATE EMAILS
 app.post("/api/generate", async (req, res) => {
   try {
-    if (usageCount >= MAX_FREE) {
-      return res.status(403).json({
-        error: "Free limit reached",
-      });
+    const { name, company, industry } = req.body;
+
+    if (!name || !company) {
+      return res.status(400).json({ error: "Missing fields" });
     }
 
-   const PORT = 5000;
+   const prompt = `
+Write ONE high-quality cold outreach email.
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+Context:
+- Recipient Name: ${name}
+- Company: ${company}
+- Industry: ${industry || "their industry"}
 
-    const { name, company, website, industry } = req.body;
+Requirements:
+- Include a strong subject line
+- Be between 120–180 words
+- Sound professional, polished, and credible
+- Feel natural and human (not AI-generated)
+- Clearly reference the company and show awareness
+- Include a subtle value proposition (how we can help them)
+- Use varied sentence structure (no repetition)
+- Avoid generic phrases like "I hope you're doing well"
+- End with a soft call-to-action (not pushy)
 
-    const prompt = `Write a short, high-converting cold outreach email.
+Style:
+- Confident but not aggressive
+- Personal and tailored
+- Written like a real business development rep
 
-Prospect Name: ${name}
-Company: ${company}
-Website: ${website}
-Industry: ${industry}`;
+IMPORTANT:
+Make the email feel thoughtfully written and specific — not templated.
+Do not repeat patterns. Make it feel fresh every time.
 
-    const completion = await openai.chat.completions.create({
+Return ONLY the email.
+
+Focus on how you can help with: ${randomAngle}
+`;
+
+const angles = [
+  "increasing revenue",
+  "improving customer engagement",
+  "streamlining operations",
+  "scaling outreach efforts",
+  "optimizing marketing performance"
+];
+
+const randomAngle = angles[Math.floor(Math.random() * angles.length)];
+
+
+    const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
+      temperature: 1,
     });
 
-    usageCount++; // ✅ increment here
+    const rawText = response?.choices?.[0]?.message?.content;
 
-    res.json({
-      email: completion.choices[0].message.content,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Something went wrong" });
-  }
-});
+    // 🔥 Fallback if AI fails
+    if (!rawText) {
+      return res.json({
+        emails: [
+          `Subject: Quick idea for ${company}
 
+Hi ${name},
 
-const PORT = 5000;
+I came across ${company} and wanted to reach out. I believe there’s an opportunity to improve your outreach and generate more engagement.
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+Would you be open to a quick chat?
 
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
-
-app.post("/api/bulk-generate", async (req, res) => {
-  try {
-    const { leads } = req.body;
-
-    const results = [];
-
-    for (const lead of leads) {
-      const prompt = `Write a short outreach email.
-
-Name: ${lead.name}
-Company: ${lead.company}
-Website: ${lead.website}
-Industry: ${lead.industry}`;
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-      });
-
-      results.push({
-        name: lead.name,
-        company: lead.company,
-        email: completion.choices[0].message.content,
+Best regards,  
+Your Name`,
+        ],
       });
     }
 
-    res.json({ results });
+    let emails = rawText
+      .split("---")
+      .map((e) => e.trim())
+      .filter((e) => e.length > 0);
+
+    if (emails.length === 0) {
+      emails = [rawText];
+    }
+
+    res.json({ emails });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Bulk failed" });
-  }
-});
+    console.error("❌ SERVER ERROR:", err);
 
-app.post("/api/login", (req, res) => {
-  const { email, password } = req.body;
-
-  // simple demo login
-  if (email === "test@test.com" && password === "1234") {
-    return res.json({
-      success: true,
-      user: { email, plan: "PRO" },
+    res.json({
+      emails: [
+        "Subject: Quick outreach\n\nHi there,\n\nJust reaching out to connect.\n\nBest,\nYour Name",
+      ],
     });
   }
-
-  res.status(401).json({ error: "Invalid credentials" });
 });
+
+// ✅ START SERVER LAST
+app.listen(5000, () => {
+  console.log("✅ Server running on http://localhost:5000");
+});
+
+console.log("API KEY:", process.env.OPENAI_API_KEY);
+console.log("OPENAI RESPONSE:", response);

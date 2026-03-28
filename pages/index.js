@@ -9,13 +9,14 @@ export default function Home() {
     industry: "",
   });
 
+  const [email, setEmail] = useState("");
   const [csvFile, setCsvFile] = useState(null);
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
 
   const router = useRouter();
 
-  // LOAD USER
+  // Load user
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
@@ -23,30 +24,55 @@ export default function Home() {
 
   const plan = user?.plan || "free";
 
-  // INPUT CHANGE
+  // Handle input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // SINGLE GENERATE
-  const generateEmail = () => {
-    if (!user) {
-      alert("Login required");
-      router.push("/login");
+  // Generate Email
+const generateEmail = async () => {
+  try {
+    setMessage("⏳ Generating email...");
+
+    const res = await fetch("http://localhost:5000/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    console.log("API RESPONSE:", data);
+
+    // 🔥 FIX HERE
+    if (!data.emails || data.emails.length === 0) {
+      setMessage("❌ No email returned");
       return;
     }
 
-    alert("Email generated!");
-  };
+    // 👉 pick ONE random email
+    const randomEmail =
+      data.emails[Math.floor(Math.random() * data.emails.length)];
 
-  // CSV UPLOAD
+    setEmail(randomEmail);
+    setMessage("✅ Email generated!");
+
+  } catch (err) {
+    console.error(err);
+    setMessage("❌ Error generating email");
+  }
+};
+
+  // Upload CSV
   const handleCSVUpload = (e) => {
     const file = e.target.files[0];
     setCsvFile(file);
     setMessage(`Uploaded: ${file?.name}`);
   };
 
-  // BULK GENERATE
+  // Bulk generate
   const handleBulkGenerate = () => {
     if (!user) {
       alert("Login required");
@@ -77,7 +103,7 @@ export default function Home() {
             <strong>Current Plan:</strong> {plan.toUpperCase()}
           </div>
 
-          {/* FORM CARD */}
+          {/* FORM */}
           <div style={styles.card}>
             <input
               name="name"
@@ -104,12 +130,30 @@ export default function Home() {
               onChange={handleChange}
             />
 
-            <button style={styles.primaryBtn} onClick={generateEmail}>
+             <button style={styles.button} onClick={generateEmail}>
               Generate Email
             </button>
+
+            {email && (
+  <div style={styles.outputBox}>
+    <h3>Generated Email</h3>
+
+    <textarea
+      value={email}
+      readOnly
+      rows={10}
+      style={styles.output}
+    />
+  </div>
+)}
+
+<button onClick={() => navigator.clipboard.writeText(email)}>
+  Copy Email
+</button>
+            
           </div>
 
-          {/* BULK CARD */}
+          {/* BULK */}
           <div style={styles.card}>
             <h2 style={styles.bulkTitle}>📂 Bulk Generate (CSV)</h2>
 
@@ -117,7 +161,6 @@ export default function Home() {
               Upload a CSV file to generate multiple emails instantly
             </p>
 
-            {/* Upload */}
             <label style={styles.uploadBox}>
               <input
                 type="file"
@@ -133,16 +176,17 @@ export default function Home() {
               </div>
             </label>
 
-            {/* File name */}
             {csvFile && (
               <p style={styles.fileName}>📄 {csvFile.name}</p>
             )}
 
-            {/* Button */}
             <button
               style={{
-                ...styles.bulkBtn,
-                opacity: plan === "free" || plan === "starter" ? 0.5 : 1,
+                ...styles.button,
+                background:
+                  plan === "free" || plan === "starter"
+                    ? "#ccc"
+                    : "linear-gradient(135deg, #00c9a7, #00b894)",
                 cursor:
                   plan === "free" || plan === "starter"
                     ? "not-allowed"
@@ -159,10 +203,10 @@ export default function Home() {
                 🔒 Available on PRO & AGENCY plans
               </p>
             )}
-
-            {/* STATUS */}
-            {message && <p style={styles.message}>{message}</p>}
           </div>
+
+          {/* MESSAGE */}
+          {message && <p style={styles.message}>{message}</p>}
         </div>
       </div>
     </div>
@@ -174,12 +218,8 @@ export default function Home() {
 const styles = {
   page: {
     minHeight: "100vh",
-    backgroundImage: "url('/background.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
   },
 
   overlay: {
@@ -189,7 +229,6 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    padding: "20px",
   },
 
   container: {
@@ -201,20 +240,18 @@ const styles = {
   },
 
   title: {
-    fontSize: "32px",
     textAlign: "center",
+    fontSize: "32px",
   },
 
   planBox: {
-    width: "100%",
     background: "#e3e8ff",
-    padding: "12px",
+    padding: "10px",
     borderRadius: "8px",
     textAlign: "center",
   },
 
   card: {
-    width: "100%",
     background: "#fff",
     padding: "25px",
     borderRadius: "12px",
@@ -222,36 +259,33 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "12px",
+    alignItems: "center",
   },
 
-input: {
-  width: "80%",        // 👈 smaller width
-  margin: "0 auto",    // 👈 centers horizontally
-  padding: "12px",
-  borderRadius: "8px",
-  border: "1px solid #ddd",
-  textAlign: "center",
-},
-primaryBtn: {
-  width: "80%",        // 👈 match input width
-  margin: "0 auto",    // 👈 center it
-  padding: "14px",
-  borderRadius: "10px",
-  border: "none",
-  background: "linear-gradient(135deg, #4b4ded, #7a5cff)",
-  color: "#fff",
-  fontWeight: "600",
-  cursor: "pointer",
-},
+  input: {
+    width: "80%",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+    textAlign: "center",
+  },
 
-  bulkBtn: {
-    width: "100%",
+  button: {
+    width: "80%",
     padding: "14px",
     borderRadius: "10px",
     border: "none",
-    background: "linear-gradient(135deg, #00c9a7, #00b894)",
+    background: "linear-gradient(135deg, #4b4ded, #7a5cff)",
     color: "#fff",
     fontWeight: "600",
+  },
+
+  output: {
+    width: "80%",
+    marginTop: "10px",
+    padding: "10px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
   },
 
   bulkTitle: {
@@ -270,6 +304,7 @@ primaryBtn: {
     padding: "25px",
     textAlign: "center",
     cursor: "pointer",
+    width: "80%",
   },
 
   fileName: {
@@ -286,4 +321,21 @@ primaryBtn: {
     textAlign: "center",
     fontWeight: "500",
   },
+
+  outputBox: {
+  width: "100%",
+  background: "#fff",
+  padding: "20px",
+  borderRadius: "12px",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+},
+
+output: {
+  width: "100%",
+  marginTop: "10px",
+  padding: "12px",
+  borderRadius: "8px",
+  border: "1px solid #ddd",
+  resize: "none",
+},
 };
