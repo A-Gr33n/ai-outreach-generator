@@ -35,7 +35,7 @@ export default function Pricing() {
           <h3>£0</h3>
 
           <ul>
-            <li>First 3 generators free</li>
+            <li>First 5 generators free</li>
             <li>AI generated outreach email</li>
             <li>Test the product</li>
           </ul>

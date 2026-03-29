@@ -4,95 +4,102 @@ const express = require("express");
 const cors = require("cors");
 const OpenAI = require("openai");
 
-// ✅ CREATE APP FIRST
 const app = express();
-
-// ✅ MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
-// ✅ OPENAI SETUP
+// ✅ add this
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// ✅ TEST ROUTE
-app.get("/", (req, res) => {
-  res.send("🚀 API is running...");
-});
-
-// ✅ GENERATE EMAILS
 app.post("/api/generate", async (req, res) => {
   try {
     const { name, company, industry } = req.body;
 
-    if (!name || !company) {
-      return res.status(400).json({ error: "Missing fields" });
-    }
-
-   const prompt = `
-Write ONE high-quality cold outreach email.
+const prompt = `
+Generate 10 professional cold outreach emails.
 
 Context:
-- Recipient Name: ${name}
+- Name: ${name}
 - Company: ${company}
 - Industry: ${industry || "their industry"}
 
-Requirements:
-- Include a strong subject line
-- Be between 120–180 words
-- Sound professional, polished, and credible
-- Feel natural and human (not AI-generated)
-- Clearly reference the company and show awareness
-- Include a subtle value proposition (how we can help them)
-- Use varied sentence structure (no repetition)
-- Avoid generic phrases like "I hope you're doing well"
-- End with a soft call-to-action (not pushy)
+RULES:
+- Each email must be 120–180 words
+- Include a subject line at the top
+- Use proper paragraph spacing (line breaks, not \\n\\n text)
+- DO NOT include "\\n" or "\\n\\n" anywhere in output
+- Write in clean paragraphs (like a real email)
 
-Style:
-- Confident but not aggressive
-- Personal and tailored
-- Written like a real business development rep
+ENDING (MANDATORY):
+Always end EXACTLY like this:
 
-IMPORTANT:
-Make the email feel thoughtfully written and specific — not templated.
-Do not repeat patterns. Make it feel fresh every time.
+Yours sincerely,
+[Your Name]
 
-Return ONLY the email.
+STYLE:
+- Professional and natural
+- Personalized to the company
+- Avoid generic phrases
 
-Focus on how you can help with: ${randomAngle}
+FORMAT:
+Return ONLY a JSON array:
+[
+  "Subject: ... Email...",
+  "Subject: ... Email..."
+]
 `;
 
-const angles = [
-  "increasing revenue",
-  "improving customer engagement",
-  "streamlining operations",
-  "scaling outreach efforts",
-  "optimizing marketing performance"
-];
+console.log("PROMPT:", prompt);
 
-const randomAngle = angles[Math.floor(Math.random() * angles.length)];
+const response = await openai.chat.completions.create({
+  model: "gpt-3.5-turbo",
+  messages: [
+    {
+      role: "user",
+      content: prompt,
+    },
+  ],
+  temperature: 1.2,
+  max_tokens: 1500, // 🔥 increase length
+});
 
+    const content = response.choices[0].message.content;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 1,
-    });
+    let emails = [];
 
-    const rawText = response?.choices?.[0]?.message?.content;
+    try {
+      emails = JSON.parse(content);
+    } catch (err) {
+      console.log("❌ JSON parse failed, fallback split");
 
-    // 🔥 Fallback if AI fails
-    if (!rawText) {
+      // fallback if AI doesn't return perfect JSON
+      emails = content
+        .split("Subject:")
+        .slice(1)
+        .map((e) => "Subject:" + e.trim());
+    }
+
+    // safety fallback
+    if (!emails || emails.length === 0) {
       return res.json({
         emails: [
-          `Subject: Quick idea for ${company}
+          `Subject: Opportunity with ${company}
 
 Hi ${name},
 
-I came across ${company} and wanted to reach out. I believe there’s an opportunity to improve your outreach and generate more engagement.
+I’ve been following ${company} and wanted to reach out with a tailored idea that could help strengthen your position in the ${industry} space.
 
-Would you be open to a quick chat?
+From what I’ve seen, there’s a clear opportunity to improve engagement and drive more meaningful results through a refined outreach strategy that aligns with your brand’s direction.
+
+I’d love to share a few specific ideas that could be relevant to your current initiatives and explore whether there’s a fit.
+
+Would you be open to a quick conversation sometime this week?
 
 Best regards,  
 Your Name`,
@@ -100,26 +107,21 @@ Your Name`,
       });
     }
 
-    let emails = rawText
-      .split("---")
-      .map((e) => e.trim())
-      .filter((e) => e.length > 0);
-
-    if (emails.length === 0) {
-      emails = [rawText];
-    }
-
     res.json({ emails });
 
-  } catch (err) {
-    console.error("❌ SERVER ERROR:", err);
+  } catch (error) {
+    console.error("❌ ERROR:", error.message);
 
     res.json({
       emails: [
-        "Subject: Quick outreach\n\nHi there,\n\nJust reaching out to connect.\n\nBest,\nYour Name",
+        "Subject: Error\n\nSomething went wrong generating emails. Please try again.",
       ],
     });
   }
+});
+
+app.listen(5000, () => {
+  console.log("🚀 Server running on http://localhost:5000");
 });
 
 // ✅ START SERVER LAST
@@ -127,5 +129,16 @@ app.listen(5000, () => {
   console.log("✅ Server running on http://localhost:5000");
 });
 
+openai.chat.completions.create({
+    model: "gpt-3.5-turbo", // or "gpt-4"
+    messages: [{ role: "user", content: "Hello world" }],
+}).then((data) => {
+    // We use 'data' here because that's what is inside the .then((data) => ...)
+    console.log("OPENAI RESPONSE:", data); 
+}).catch((err) => {
+    console.error("ERROR:", err);
+});
+
+
+
 console.log("API KEY:", process.env.OPENAI_API_KEY);
-console.log("OPENAI RESPONSE:", response);

@@ -10,6 +10,7 @@ export default function Home() {
   });
 
   const [email, setEmail] = useState("");
+  const [usage, setUsage] = useState(0);
   const [csvFile, setCsvFile] = useState(null);
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
@@ -18,9 +19,12 @@ export default function Home() {
 
   // Load user
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
-  }, []);
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) setUser(JSON.parse(storedUser));
+
+  const storedUsage = localStorage.getItem("usage");
+  if (storedUsage) setUsage(Number(storedUsage));
+}, []);
 
   const plan = user?.plan || "free";
 
@@ -29,8 +33,19 @@ export default function Home() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Generate Email
-const generateEmail = async () => {
+  const generateEmail = async () => {
+  if (!user) {
+    alert("Login required");
+    router.push("/login");
+    return;
+  }
+
+  // 🔒 FREE PLAN LIMIT
+  if (user.plan === "free" && usage >= 5) {
+    setMessage("❌ Free limit reached (5 emails). Upgrade to continue.");
+    return;
+  }
+
   try {
     setMessage("⏳ Generating email...");
 
@@ -44,19 +59,21 @@ const generateEmail = async () => {
 
     const data = await res.json();
 
-    console.log("API RESPONSE:", data);
-
-    // 🔥 FIX HERE
     if (!data.emails || data.emails.length === 0) {
       setMessage("❌ No email returned");
       return;
     }
 
-    // 👉 pick ONE random email
     const randomEmail =
       data.emails[Math.floor(Math.random() * data.emails.length)];
 
     setEmail(randomEmail);
+
+    // ✅ INCREMENT USAGE
+    const newUsage = usage + 1;
+    setUsage(newUsage);
+    localStorage.setItem("usage", newUsage);
+
     setMessage("✅ Email generated!");
 
   } catch (err) {
@@ -102,6 +119,12 @@ const generateEmail = async () => {
           <div style={styles.planBox}>
             <strong>Current Plan:</strong> {plan.toUpperCase()}
           </div>
+          
+          {user?.plan === "free" && (
+          <div style={styles.usageBox}>
+            Free Plan: {usage}/5 emails used
+          </div>
+            )}
 
           {/* FORM */}
           <div style={styles.card}>
@@ -136,7 +159,11 @@ const generateEmail = async () => {
 
             {email && (
   <div style={styles.outputBox}>
-    <h3>Generated Email</h3>
+    <h3>Generated Email</h3> 
+
+    <pre style={{ whiteSpace: "pre-wrap" }}>
+  {email}
+</pre>
 
     <textarea
       value={email}
@@ -337,5 +364,13 @@ output: {
   borderRadius: "8px",
   border: "1px solid #ddd",
   resize: "none",
+},
+
+usageBox: {
+  background: "#fff3cd",
+  padding: "10px",
+  borderRadius: "8px",
+  textAlign: "center",
+  fontSize: "14px",
 },
 };
