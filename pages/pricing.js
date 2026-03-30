@@ -4,11 +4,26 @@ import { useEffect, useState } from "react";
 export default function Pricing() {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [checked, setChecked] = useState(false); // 👈 prevent flicker
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
+
+    if (!stored) {
+      alert("Please login to view pricing");
+      router.push("/login");
+    } else {
+      setUser(JSON.parse(stored));
+    }
+
+    setChecked(true);
   }, []);
+
+  // ⛔ prevent render before check finishes
+  if (!checked) return null;
+
+  // ⛔ block page if not logged in
+  if (!user) return null;
 
   const handleUpgrade = (plan) => {
     if (!user) {
@@ -56,8 +71,14 @@ export default function Pricing() {
             <li>Email copy & export</li>
           </ul>
 
-          <button style={styles.btn} onClick={() => handleUpgrade("starter")}>
-            Upgrade
+          <button
+            style={styles.btn}
+            onClick={() =>
+              (window.location.href =
+                "https://buy.stripe.com/test_3cI00j7xq88QboxbDE5kk01")
+            }
+          >
+            Upgrade to STARTER
           </button>
         </div>
 
@@ -72,8 +93,14 @@ export default function Pricing() {
             <li>Campaign downloads</li>
           </ul>
 
-          <button style={styles.btnPrimary} onClick={() => handleUpgrade("pro")}>
-            Upgrade
+          <button
+            style={styles.btn}
+            onClick={() =>
+              (window.location.href =
+                "https://buy.stripe.com/test_bJe4gz1924WE2S1dLM5kk02")
+            }
+          >
+            Upgrade to PRO
           </button>
         </div>
 
@@ -88,8 +115,14 @@ export default function Pricing() {
             <li>Team usage</li>
           </ul>
 
-          <button style={styles.btn} onClick={() => handleUpgrade("agency")}>
-            Upgrade
+          <button
+            style={styles.btn}
+            onClick={() =>
+              (window.location.href =
+                "https://buy.stripe.com/test_fZu6oH9Fy3SAfEN2345kk03")
+            }
+          >
+            Upgrade to AGENCY
           </button>
         </div>
       </div>
@@ -142,17 +175,6 @@ const styles = {
     border: "none",
     borderRadius: "8px",
     background: "#eee",
-    cursor: "pointer",
-  },
-
-  btnPrimary: {
-    marginTop: "20px",
-    padding: "12px",
-    border: "none",
-    borderRadius: "8px",
-    background: "#fff",
-    color: "#4b4ded",
-    fontWeight: "600",
     cursor: "pointer",
   },
 };

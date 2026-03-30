@@ -17,6 +17,22 @@ export default function Account() {
 
   if (!user) return null;
 
+  <button
+  onClick={async () => {
+    await fetch("http://localhost:5000/api/cancel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: user.email }),
+    });
+
+    alert("Subscription cancelled");
+  }}
+>
+  Cancel Subscription
+</button>
+
   return (
     <div style={styles.page}>
       <div style={styles.overlay}>
@@ -43,6 +59,8 @@ export default function Account() {
               >
                 Manage Subscription
               </button>
+
+              
 
               <button
                 style={styles.logoutBtn}

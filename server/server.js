@@ -3,6 +3,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const OpenAI = require("openai");
+const Stripe = require("stripe");
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(cors());
@@ -60,6 +62,7 @@ Return ONLY the email.
     });
 
     let email = response.choices[0].message.content;
+    let users = {};
 
     console.log("EMAIL OUTPUT:\n", email);
 
@@ -96,3 +99,46 @@ app.listen(5000, () => {
   console.log("🚀 Server running on http://localhost:5000");
 });
 
+app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    console.log("❌ Webhook error:", err.message);
+    return res.sendStatus(400);
+  }
+
+  // ✅ PAYMENT SUCCESS
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+
+    const email = session.customer_email;
+
+    // 🔥 STORE USER PLAN
+    users[email] = {
+      plan: "pro", // or detect from price
+      subscriptionId: session.subscription,
+    };
+
+    console.log("✅ User upgraded:", email);
+  }
+
+  res.sendStatus(200);
+});
+
+app.get("/api/user/:email", (req, res) => {
+  const user = users[req.params.email];
+
+  if (!user) {
+    return res.json({ plan: "free" });
+  }
+
+  res.json(user);
+});
