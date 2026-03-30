@@ -11,6 +11,7 @@ export default function Home() {
   const [message, setMessage] = useState({ text: "", isError: false });
   const [user, setUser] = useState(null);
   const [usage, setUsage] = useState(0);
+  
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -68,6 +69,9 @@ export default function Home() {
     alert("Bulk working 🚀");
   };
 
+console.log("MESSAGE TYPE:", typeof message);
+console.log("MESSAGE VALUE:", message);
+
   return (
     <div style={styles.page}>
       <div style={styles.container}>
@@ -106,6 +110,16 @@ export default function Home() {
         )}
 
 
+{/* ✅ UPGRADE BUTTON */}
+{(plan === "free" && usage >= 5) && (
+  <button
+    style={styles.upgradeBtn}
+    onClick={() => router.push("/pricing")}
+  >
+    🚀 Upgrade Plan
+  </button>
+)}
+
         {/* BULK */}
         <div style={styles.card}>
           <h2>📂 Bulk Generate (CSV)</h2>
@@ -124,6 +138,15 @@ export default function Home() {
           >
             Generate From CSV
           </button>
+
+        {(plan === "free" || plan === "starter") && (
+       <button
+       style={styles.upgradeBtn}
+      onClick={() => router.push("/pricing")}
+      >
+        🔒 Unlock Bulk Feature
+     </button>
+)}
         </div>
       </div>
     </div>
@@ -203,5 +226,18 @@ const styles = {
     fontWeight: "600",
      padding: "10px", 
      borderRadius: "8px", 
-     background: "#fff" }
+     background: "#fff" },
+
+   upgradeBtn: {
+  marginTop: "10px",
+  padding: "12px",
+  borderRadius: "10px",
+  border: "none",
+  fontWeight: "600",
+  cursor: "pointer",
+  background: "linear-gradient(135deg, #ff9f43, #ff6b6b)",
+  color: "#fff",
+  transition: "0.2s",
+},
+
 };
