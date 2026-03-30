@@ -61,6 +61,8 @@ Return ONLY the email.
 
     let email = response.choices[0].message.content;
 
+    console.log("EMAIL OUTPUT:\n", email);
+
     // ✅ CLEAN FORMATTING
     email = email
       .replace(/\\n\\n/g, "\n\n")
@@ -71,6 +73,12 @@ Return ONLY the email.
     if (!email.includes("Yours sincerely")) {
       email += "\n\nYours sincerely,\n[Your Name]";
     }
+
+    if (plan === "free" && usage >= 5) {
+  return res.status(403).json({
+    error: "Free limit reached",
+  });
+}
 
     res.json({ email });
 
@@ -88,4 +96,3 @@ app.listen(5000, () => {
   console.log("🚀 Server running on http://localhost:5000");
 });
 
-console.log("EMAIL OUTPUT:\n", email);

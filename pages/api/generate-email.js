@@ -4,6 +4,52 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const generateEmail = async () => {
+  if (!user) {
+    alert("Login required");
+    router.push("/login");
+    return;
+  }
+
+  // ✅ HARD LIMIT CHECK (BEFORE API CALL)
+  if (plan === "free" && usage >= 5) {
+    setMessage("❌ Free limit reached (5 emails). Upgrade to continue.");
+    return; // 🚨 STOP HERE
+  }
+
+  try {
+    setMessage("⏳ Generating...");
+
+    const res = await fetch("http://localhost:5000/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (!data.email) {
+      throw new Error("No email returned");
+    }
+
+    setEmail(data.email);
+
+    // ✅ SAFE INCREMENT (ONLY IF UNDER LIMIT)
+    if (plan === "free") {
+      const newUsage = Math.min(usage + 1, 5); // 🚨 CAP AT 5
+      setUsage(newUsage);
+      localStorage.setItem("usage", newUsage);
+    }
+
+    setMessage("✅ Email generated!");
+  } catch (err) {
+    console.error(err);
+    setMessage("❌ Error generating email");
+  }
+};
+
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
