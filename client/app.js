@@ -1,6 +1,17 @@
 import "@/styles/globals.css";
 import React, { useState } from "react";
 import Link from "next/link";
+import Navbar from "../components/Navbar";
+
+
+export default function App({ Component, pageProps }) {
+  return (
+    <>
+      <Navbar />
+      <Component {...pageProps} />
+    </>
+  );
+}
 
 export default function App() {
   return (

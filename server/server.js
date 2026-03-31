@@ -142,3 +142,5 @@ app.get("/api/user/:email", (req, res) => {
 
   res.json(user);
 });
+
+console.log("Stripe initialized ✅");

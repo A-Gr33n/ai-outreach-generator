@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+
 export default function Navbar() {
   const [user, setUser] = useState(null);
 
@@ -8,6 +9,9 @@ export default function Navbar() {
     const stored = localStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
   }, []);
+
+     return <div>Navbar</div>;
+
 
   return (
     <nav style={styles.nav}>
