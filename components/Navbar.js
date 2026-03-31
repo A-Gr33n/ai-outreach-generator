@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-  );
+
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -30,6 +30,10 @@ export default function Navbar() {
 
         <button style={styles.btn} onClick={() => router.push("/pricing")}>
           Pricing
+        </button>
+
+           <button style={styles.btn} onClick={() => router.push("/how-to-use")}>
+         How to use
         </button>
 
         <button style={styles.btn} onClick={() => router.push("/account")}>
