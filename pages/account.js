@@ -43,7 +43,7 @@ export default function Account() {
                 )
               }
             >
-              Manage Subscription
+              Cancel Subscription
             </button>
           )}
 
