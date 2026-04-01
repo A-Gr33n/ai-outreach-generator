@@ -14,13 +14,18 @@ export default function Home() {
   const [usage, setUsage] = useState(0);
   
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+useEffect(() => {
+  const loadUser = () => {
+    const stored = localStorage.getItem("user");
+    if (stored) setUser(JSON.parse(stored));
+  };
 
-    const storedUsage = localStorage.getItem("usage");
-    if (storedUsage) setUsage(parseInt(storedUsage));
-  }, []);
+  loadUser();
+
+  window.addEventListener("focus", loadUser);
+
+  return () => window.removeEventListener("focus", loadUser);
+}, []);
 
   const plan = user?.plan || "free";
 

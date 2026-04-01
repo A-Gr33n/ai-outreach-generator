@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Navbar from "../components/Navbar";
+
 
 export default function Account() {
   const [user, setUser] = useState(null);

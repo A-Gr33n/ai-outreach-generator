@@ -1,49 +1,37 @@
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import Navbar from "../components/Navbar";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function Success() {
-  const [plan, setPlan] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const selectedPlan = params.get("plan");
+    const storedUser = localStorage.getItem("user");
 
-    if (selectedPlan) {
-      localStorage.setItem("plan", selectedPlan);
-      setPlan(selectedPlan);
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+
+      const updatedUser = {
+        ...user,
+        plan: "starter",
+      };
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
     }
   }, []);
 
   return (
-
     <div style={styles.page}>
       <div style={styles.card}>
-        <h1 style={styles.title}>🎉 Payment Successful</h1>
+        <h1>🎉 Payment Successful</h1>
+        <p>Your subscription has been activated.</p>
+        <p><strong>Current Plan: STARTER</strong></p>
 
-        <p style={styles.text}>
-          Your subscription has been activated.
-        </p>
-
-        {plan && (
-          <p style={styles.plan}>
-            Current Plan: <strong>{plan.toUpperCase()}</strong>
-          </p>
-        )}
-
-        <div>
-  <Navbar />
-
-  <div style={styles.page}>
-    ...
-  </div>
-</div>
-
-        <Link href="/">
-          <button style={styles.button}>
-            Go Back to Generator
-          </button>
-        </Link>
+        <button
+          style={styles.button}
+          onClick={() => router.push("/")}
+        >
+          Go Back to Generator
+        </button>
       </div>
     </div>
   );
@@ -58,34 +46,21 @@ const styles = {
     background: "#f5f5f5",
   },
   card: {
-    background: "white",
+    background: "#fff",
     padding: "40px",
     borderRadius: "16px",
     boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
     textAlign: "center",
-    width: "90%",
     maxWidth: "400px",
-  },
-  title: {
-    fontSize: "28px",
-    marginBottom: "15px",
-  },
-  text: {
-    fontSize: "16px",
-    marginBottom: "10px",
-    color: "#555",
-  },
-  plan: {
-    fontSize: "16px",
-    marginBottom: "25px",
+    width: "100%",
   },
   button: {
-    background: "linear-gradient(90deg, #5f6afc, #6c63ff)",
-    color: "white",
-    border: "none",
+    marginTop: "20px",
     padding: "12px 20px",
     borderRadius: "8px",
-    fontSize: "16px",
+    border: "none",
+    background: "linear-gradient(90deg, #5f6afc, #6c63ff)",
+    color: "#fff",
     cursor: "pointer",
   },
 };
