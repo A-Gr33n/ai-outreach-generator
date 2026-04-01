@@ -1,4 +1,14 @@
-app.post("/api/generate", async (req, res) => {
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
   try {
     const { name, company, industry } = req.body;
 
@@ -28,7 +38,7 @@ Return only the email.
     if (!email) {
       console.log("⚠️ No email from AI, using fallback");
 
-      return res.json({
+      return res.status(200).json({
         email: `Subject: Quick idea for ${company}
 
 Hi ${name},
@@ -37,19 +47,19 @@ I came across ${company} and wanted to reach out. I believe there’s an opportu
 
 Would you be open to a quick chat?
 
-Best regards,  
-Your Name`,
+Yours sincerely,  
+[Your Name]`,
       });
     }
 
-    res.json({ email });
+    res.status(200).json({ email });
 
   } catch (err) {
     console.error("❌ SERVER ERROR:", err);
 
     // 🔥 NEVER BREAK FRONTEND
-    res.json({
+    res.status(200).json({
       email: "Error generating email. Please try again.",
     });
   }
-});
+}
