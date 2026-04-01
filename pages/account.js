@@ -33,29 +33,32 @@ export default function Account() {
         </div>
 
         {/* ACTIONS */}
-        <div style={styles.actions}>
-          {user.plan !== "free" && (
-            <button
-              style={styles.manageBtn}
-              onClick={() =>
-                window.open(
-                  "https://billing.stripe.com/p/login/test_eVq8wP6tmbl25090Z05kk00"
-                )
-              }
-            >
-              Cancel Subscription
-            </button>
-          )}
+      <div style={styles.actions}>
+  {["starter", "pro", "agency"].includes(user.plan?.toLowerCase()) && (
+    <>
+      {/* 🔴 Cancel */}
+      <button
+        style={styles.cancelBtn}
+        onClick={() =>
+          window.open(
+            "https://billing.stripe.com/p/login/test_xxx",
+            "_blank"
+          )
+        }
+      >
+        Cancel Subscription
+      </button>
 
-          {user.plan === "free" && (
-            <button
-              style={styles.upgradeBtn}
-              onClick={() => (window.location.href = "/pricing")}
-            >
-              Upgrade Plan
-            </button>
-          )}
-        </div>
+      {/* 🔵 Upgrade */}
+      <button
+        style={styles.upgradeBtn}
+        onClick={() => (window.location.href = "/pricing")}
+      >
+        Upgrade Plan
+      </button>
+    </>
+  )}
+</div>
       </div>
     </div>
   );
@@ -112,8 +115,9 @@ const styles = {
 
   actions: {
     display: "flex",
-    flexDirection: "column",
-    gap: "15px",
+  flexDirection: "column",
+  gap: "12px", // 👈 THIS adds spacing between buttons
+  marginTop: "20px",
   },
 
   manageBtn: {
