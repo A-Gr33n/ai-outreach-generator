@@ -16,23 +16,16 @@ export default function Account() {
     }
   }, []);
 
-  if (!user) return null;
 
+
+{user?.plan !== "free" && (
   <button
-  onClick={async () => {
-    await fetch("http://localhost:5000/api/cancel", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: user.email }),
-    });
-
-    alert("Subscription cancelled");
-  }}
->
-  Cancel Subscription
-</button>
+    style={styles.button}
+    onClick={() => window.location.href = "https://billing.stripe.com/p/login/test_eVq8wP6tmbl25090Z05kk00"}
+  >
+    Cancel / 
+  </button>
+)}
 
   return (
     <div style={styles.page}>
