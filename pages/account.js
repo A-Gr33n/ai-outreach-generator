@@ -35,33 +35,28 @@ export default function Account() {
 
   const plan = user.plan?.toLowerCase();
 
- // const handleCancel = () => {
-    // 🔥 Replace with Stripe portal later
-    //alert("Redirecting to Stripe to cancel...");
-
-    //window.location.href = "billing.stripe.com/p/login/test_eVq8wP6tmbl25090Z05kk00";
-  //};
-
-  const handleCancel = async () => {
+const handleManageSubscription = async () => {
   try {
-    const res = await fetch("/api/cancel-subscription", {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const res = await fetch("/api/customer-portal", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        customerId: user.customerId, // 🔥 must exist
+      }),
     });
 
     const data = await res.json();
 
-    alert("Subscription cancelled");
-
-    // optional: update UI
-    const user = JSON.parse(localStorage.getItem("user"));
-    user.plan = "free";
-    localStorage.setItem("user", JSON.stringify(user));
-
-    router.reload();
+    // ✅ REDIRECT TO STRIPE PORTAL
+    window.location.href = data.url;
 
   } catch (err) {
     console.error(err);
-    alert("Error cancelling subscription");
+    alert("Error opening billing portal");
   }
 };
 
