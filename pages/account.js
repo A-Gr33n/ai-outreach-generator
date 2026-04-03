@@ -90,9 +90,7 @@ const handleManageSubscription = async () => {
             <button onClick={handleManageSubscription}>
             Manage Subscription
             </button>
-              <button style={styles.cancelBtn} onClick={handleCancel}>
-                Cancel Subscription
-              </button>
+              
 
               <button style={styles.upgradeBtn} onClick={handleUpgrade}>
                 Upgrade Plan
