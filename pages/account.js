@@ -7,15 +7,31 @@ export default function Account() {
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
+  const stored = localStorage.getItem("user");
 
-    if (!stored) {
-      router.push("/login");
-      return;
-    }
-
+  if (stored) {
     setUser(JSON.parse(stored));
-  }, []);
+  } else {
+    setUser(null); // don't redirect yet
+  }
+}, []);
+
+ 
+    //if (!stored) {
+     // router.push("/login");
+      //return;
+   // }
+
+   if (user === null) {
+  return (
+    <div style={{ textAlign: "center", marginTop: "100px" }}>
+      <h2>Please log in</h2>
+      <button onClick={() => router.push("/login")}>
+        Go to Login
+      </button>
+    </div>
+  );
+}
 
   // Prevent SSR crash
   if (!user) return null;
