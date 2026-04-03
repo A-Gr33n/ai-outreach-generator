@@ -17,11 +17,7 @@ export default function Account() {
   }
 }, []);
 
- 
-    //if (!stored) {
-     // router.push("/login");
-      //return;
-   // }
+
 
    if (user === null) {
   return (
@@ -39,12 +35,35 @@ export default function Account() {
 
   const plan = user.plan?.toLowerCase();
 
-  const handleCancel = () => {
+ // const handleCancel = () => {
     // 🔥 Replace with Stripe portal later
-    alert("Redirecting to Stripe to cancel...");
+    //alert("Redirecting to Stripe to cancel...");
 
-    window.location.href = "billing.stripe.com/p/login/test_eVq8wP6tmbl25090Z05kk00";
-  };
+    //window.location.href = "billing.stripe.com/p/login/test_eVq8wP6tmbl25090Z05kk00";
+  //};
+
+  const handleCancel = async () => {
+  try {
+    const res = await fetch("/api/cancel-subscription", {
+      method: "POST",
+    });
+
+    const data = await res.json();
+
+    alert("Subscription cancelled");
+
+    // optional: update UI
+    const user = JSON.parse(localStorage.getItem("user"));
+    user.plan = "free";
+    localStorage.setItem("user", JSON.stringify(user));
+
+    router.reload();
+
+  } catch (err) {
+    console.error(err);
+    alert("Error cancelling subscription");
+  }
+};
 
   const handleUpgrade = () => {
     router.push("/pricing");
