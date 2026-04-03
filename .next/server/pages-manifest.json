@@ -1,19 +1,6 @@
 {
-  "/_document": "pages/_document.js",
   "/_app": "pages/_app.js",
-  "/api/cancel-subscription": "pages/api/cancel-subscription.js",
-  "/account": "pages/account.html",
   "/_error": "pages/_error.js",
-  "/api/checkout": "pages/api/checkout.js",
-  "/api/generate-bulk": "pages/api/generate-bulk.js",
-  "/api/hello": "pages/api/hello.js",
-  "/api/generate-email": "pages/api/generate-email.js",
-  "/api/customer-portal": "pages/api/customer-portal.js",
-  "/api/generate": "pages/api/generate.js",
-  "/": "pages/index.html",
-  "/how-to-use": "pages/how-to-use.html",
-  "/login": "pages/login.html",
-  "/success": "pages/success.html",
-  "/pricing": "pages/pricing.html",
-  "/404": "pages/404.html"
+  "/_document": "pages/_document.js",
+  "/": "pages/index.js"
 }
