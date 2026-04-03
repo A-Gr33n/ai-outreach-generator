@@ -26,6 +26,8 @@ export default function Account() {
       <button onClick={() => router.push("/login")}>
         Go to Login
       </button>
+
+
     </div>
   );
 }
@@ -84,6 +86,10 @@ const handleManageSubscription = async () => {
           {/* 🔥 ONLY SHOW FOR PAID USERS */}
           {["starter", "pro", "agency"].includes(plan) && (
             <>
+
+            <button onClick={handleManageSubscription}>
+            Manage Subscription
+            </button>
               <button style={styles.cancelBtn} onClick={handleCancel}>
                 Cancel Subscription
               </button>
