@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     // ✅ Create Stripe Billing Portal session
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: "https://your-vercel-app.vercel.app/account", // 🔥 CHANGE THIS
+      return_url: "https://aisalesoutreach.vercel.app/account", // 🔥 CHANGE THIS
     });
 
     // ✅ Send URL back to frontend
