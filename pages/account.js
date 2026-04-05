@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Navbar from "../components/Navbar";
+
 
 
 export default function Account() {
@@ -41,17 +41,26 @@ const handleManageSubscription = async () => {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
 
+    const data = await res.json();
+
+     console.log("API RESPONSE:", data); // 👈 ADD THIS
+
+     window.location.href = data.url;
+
     const res = await fetch("/api/customer-portal", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+   
       body: JSON.stringify({
-        customerId: user.customerId, // 🔥 must exist
-      }),
+  customerId: "cus_UGzeYXBmFkD5jm", // 👈 paste from Stripe
+}),
+
+      
+
     });
 
-    const data = await res.json();
 
     // ✅ REDIRECT TO STRIPE PORTAL
     window.location.href = data.url;
