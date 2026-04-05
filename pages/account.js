@@ -39,7 +39,7 @@ export default function Account() {
 
 const handleManageSubscription = async () => {
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
+  
 
     const data = await res.json();
 
