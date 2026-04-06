@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
+
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const router = useRouter();
@@ -53,30 +54,44 @@ useEffect(() => {
 }
 
 
-const navBtn = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "1px solid #ddd",
-  background: "#fff",
-  cursor: "pointer",
-};
-
-const loginBtn = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "none",
-  background: "linear-gradient(135deg, #4b4ded, #6c63ff)",
-  color: "#fff",
-  fontWeight: "600",
-  cursor: "pointer",
-};
-
-const logoutBtn = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#ef4444",
-  color: "#fff",
-  fontWeight: "600",
-  cursor: "pointer",
+// Wrap all your objects inside one "styles" object
+const styles = {
+  nav: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "20px",
+    background: "#fff",
+    borderBottom: "1px solid #eee",
+  },
+  links: {
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+  },
+  navBtn: {
+    padding: "10px 16px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+    background: "#fff",
+    cursor: "pointer",
+  },
+  login: {
+    padding: "10px 16px",
+    borderRadius: "8px",
+    border: "none",
+    background: "linear-gradient(135deg, #4b4ded, #6c63ff)",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+  logout: {
+    padding: "10px 16px",
+    borderRadius: "8px",
+    border: "none",
+    background: "#ef4444",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
 };
