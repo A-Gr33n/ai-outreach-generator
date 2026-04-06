@@ -23,9 +23,10 @@ export default function Account() {
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
       <h2>Please log in</h2>
-      <button onClick={() => router.push("/login")}>
-        Go to Login
-      </button>
+     
+     <button style={styles.loginBtn} onClick={() => router.push("/login")}>
+  Go to Login
+    </button>
 
 
     </div>
@@ -68,6 +69,8 @@ const handleManageSubscription = async () => {
   const handleUpgrade = () => {
     router.push("/pricing");
   };
+
+
 
   return (
     <>
@@ -150,6 +153,17 @@ const styles = {
     fontSize: "14px",
     marginLeft: "8px",
   },
+
+  loginBtn: {
+  marginTop: "20px",
+  padding: "12px 20px",
+  border: "none",
+  borderRadius: "8px",
+  background: "linear-gradient(135deg, #4b4ded, #6c63ff)",
+  color: "#fff",
+  fontWeight: "600",
+  cursor: "pointer",
+},
 
   manageBtn: {
     marginTop: "20px",

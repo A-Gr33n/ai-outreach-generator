@@ -5,15 +5,20 @@ export default function Navbar() {
   const router = useRouter();
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
-  }, []);
+useEffect(() => {
+  const stored = localStorage.getItem("user");
+  if (stored) {
+    setUser(JSON.parse(stored));
+  } else {
+    setUser(null);
+  }
+}, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    router.push("/login");
-  };
+ const handleLogout = () => {
+  localStorage.removeItem("user");
+  setUser(null); // 🔥 FORCE UI UPDATE
+  router.push("/login");
+};
 
   return (
     <div style={styles.nav}>
