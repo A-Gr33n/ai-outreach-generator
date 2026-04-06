@@ -110,14 +110,28 @@ export default function Home() {
       user.resetDate = now.toISOString();
       localStorage.setItem("user", JSON.stringify(user));
     }
+
+    const getLimit = (plan) => {
+  if (plan === "free") return 3;
+  if (plan === "starter") return 100;
+  return Infinity; // pro + agency
+};
   }
 
   // ✅ LIMIT CHECK
-  if (user?.plan === "starter" && (user?.usage || 0) >= 100) {
-    setMessage("❌ Monthly limit reached (100 emails)");
-    return;
-  }
+ const limit = getLimit(user?.plan);
 
+if ((user?.usage || 0) >= limit) {
+  setMessage(`❌ Limit reached (${limit} emails per month)`);
+  return;
+}
+
+
+<p>
+  Usage: {user?.usage || 0} / {limit === Infinity ? "∞" : limit}
+</p>
+
+  
   // 👉 CALL YOUR API HERE
 
   // ✅ AFTER SUCCESS → INCREMENT USAGE

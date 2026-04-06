@@ -13,13 +13,13 @@ console.log("BUTTON CLICKED");
   const email = form.email;
 
   const user = {
-    email: email,
-    plan: "free", // default plan
-    usage: 0,
-  resetDate: new Date().toISOString(), // track month start
-  };
+  email: email,
+  plan: "free",
+  usage: 0,
+  resetDate: new Date().toISOString(),
+};
 
-  localStorage.setItem("user", JSON.stringify(user));
+localStorage.setItem("user", JSON.stringify(user));
 
   router.push("/"); // redirect after login
 };
