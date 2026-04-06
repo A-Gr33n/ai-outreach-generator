@@ -4,8 +4,11 @@ import { useRouter } from "next/router";
 export default function Login() {
   const [email, setEmail] = useState("");
   const router = useRouter();
+  const [form, setForm] = useState({ email: "" });
 
 const handleLogin = () => {
+  
+console.log("BUTTON CLICKED");
   // Example (replace with your actual login logic)
   const email = form.email;
 
@@ -19,6 +22,7 @@ const handleLogin = () => {
   router.push("/"); // redirect after login
 };
 
+
   return (
     <div style={styles.page}>
       <div style={styles.card}>
@@ -30,10 +34,20 @@ const handleLogin = () => {
           onChange={(e) => setEmail(e.target.value)}
           style={styles.input}
         />
+        <form onSubmit={handleLogin}>
+      <input
+        type="email"
+        placeholder="Enter email"
+        value={form.email}
+        onChange={(e) => setForm({ email: e.target.value })}
+      />
 
-        <button onClick={handleLogin} style={styles.button}>
+        <button onClick={handleLogin} type="submit" style={styles.button}>
           Continue
         </button>
+
+    </form>
+
       </div>
     </div>
   );
