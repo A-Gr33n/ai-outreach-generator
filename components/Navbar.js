@@ -1,50 +1,49 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
-  const [user, setUser] = useState(null);
   const router = useRouter();
+  const [user, setUser] = useState(null);
 
-useEffect(() => {
-  const handleStorage = () => {
+  useEffect(() => {
     const stored = localStorage.getItem("user");
-    setUser(stored ? JSON.parse(stored) : null);
-  };
-
-  window.addEventListener("storage", handleStorage);
-
-  return () => window.removeEventListener("storage", handleStorage);
-}, []);
+    if (stored) setUser(JSON.parse(stored));
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    setUser(null); // 🔥 THIS FIXES UI
     router.push("/login");
   };
 
   return (
     <div style={styles.nav}>
-      <h2 style={{ cursor: "pointer" }} onClick={() => router.push("/")}>
+      <h2 style={styles.logo} onClick={() => router.push("/")}>
         AI Outreach
       </h2>
 
-      <div style={styles.links}>
-        <button onClick={() => router.push("/")}>Home</button>
-        <button onClick={() => router.push("/pricing")}>Pricing</button>
-        <button onClick={() => router.push("/how-to-use")}>How to use</button>
-        <button onClick={() => router.push("/account")}>Account</button>
+      <div style={styles.navLinks}>
+        <button style={styles.btn} onClick={() => router.push("/")}>
+          Home
+        </button>
 
-        {/* 🔥 CONDITIONAL BUTTON */}
+        <button style={styles.btn} onClick={() => router.push("/pricing")}>
+          Pricing
+        </button>
+
+        <button style={styles.btn} onClick={() => router.push("/how-to-use")}>
+          How to use
+        </button>
+
+        <button style={styles.btn} onClick={() => router.push("/account")}>
+          Account
+        </button>
+
         {user ? (
-          <button style={styles.logout} onClick={handleLogout}>
+          <button style={styles.btnDanger} onClick={handleLogout}>
             Logout
           </button>
         ) : (
-          <button
-            style={styles.login}
-            onClick={() => router.push("/login")}
-          >
+          <button style={styles.btnPrimary} onClick={() => router.push("/login")}>
             Login
           </button>
         )}
@@ -60,23 +59,40 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "20px",
+    padding: "20px 40px",
     background: "#fff",
     borderBottom: "1px solid #eee",
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
   },
-  links: {
+
+  logo: {
+    fontSize: "20px",
+    fontWeight: "bold",
+    cursor: "pointer",
+  },
+
+  navLinks: {
     display: "flex",
-    gap: "10px",
-    alignItems: "center",
+    gap: "12px",
   },
-  navBtn: {
+
+  btn: {
     padding: "10px 16px",
     borderRadius: "8px",
     border: "1px solid #ddd",
     background: "#fff",
     cursor: "pointer",
+    fontSize: "14px",
+    transition: "all 0.2s ease",
   },
-  login: {
+
+  btnHover: {
+    background: "#f5f5f5",
+  },
+
+  btnPrimary: {
     padding: "10px 16px",
     borderRadius: "8px",
     border: "none",
@@ -84,8 +100,10 @@ const styles = {
     color: "#fff",
     fontWeight: "600",
     cursor: "pointer",
+    transition: "all 0.2s ease",
   },
-  logout: {
+
+  btnDanger: {
     padding: "10px 16px",
     borderRadius: "8px",
     border: "none",
