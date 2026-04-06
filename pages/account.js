@@ -71,7 +71,7 @@ const handleManageSubscription = async () => {
 
   return (
     <>
-      <Navbar />
+      
 
       <div style={styles.page}>
         <div style={styles.card}>
@@ -90,9 +90,9 @@ const handleManageSubscription = async () => {
           {["starter", "pro", "agency"].includes(plan) && (
             <>
 
-            <button onClick={handleManageSubscription}>
-            Manage Subscription
-            </button>
+          <button style={styles.manageBtn} onClick={handleManageSubscription}>
+           Manage Subscription
+          </button>
               
 
               <button style={styles.upgradeBtn} onClick={handleUpgrade}>
@@ -149,6 +149,17 @@ const styles = {
     borderRadius: "20px",
     fontSize: "14px",
     marginLeft: "8px",
+  },
+
+  manageBtn: {
+    marginTop: "20px",
+    width: "100%",
+    padding: "12px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    background: "#fff",
+    cursor: "pointer",
+    fontWeight: "500",
   },
 
   cancelBtn: {

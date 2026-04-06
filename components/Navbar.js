@@ -52,56 +52,30 @@ useEffect(() => {
   );
 }
 
-const styles = {
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "20px 40px",
-    background: "#fff",
-    borderBottom: "1px solid #eee",
-    position: "sticky",
-    top: 0,
-    zIndex: 1000,
-  },
-
-  logo: {
-    fontSize: "20px",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-
-  links: {
-    display: "flex",
-    gap: "12px",
-  },
-
-  btn: {
-    padding: "10px 16px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    background: "#fff",
-    cursor: "pointer",
-  },
-
-  btnPrimary: {
-    padding: "10px 16px",
-    borderRadius: "8px",
-    border: "none",
-    background: "linear-gradient(135deg, #4b4ded, #6c63ff)",
-    color: "#fff",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-
-  btnDanger: {
-    padding: "10px 16px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#ff4d4f",
-    color: "#fff",
-    cursor: "pointer",
-  },
+const navBtn = {
+  padding: "10px 16px",
+  borderRadius: "8px",
+  border: "1px solid #ddd",
+  background: "#fff",
+  cursor: "pointer",
 };
 
+const loginBtn = {
+  padding: "10px 16px",
+  borderRadius: "8px",
+  border: "none",
+  background: "linear-gradient(135deg, #4b4ded, #6c63ff)",
+  color: "#fff",
+  fontWeight: "600",
+  cursor: "pointer",
+};
 
+const logoutBtn = {
+  padding: "10px 16px",
+  borderRadius: "8px",
+  border: "none",
+  background: "#ef4444",
+  color: "#fff",
+  fontWeight: "600",
+  cursor: "pointer",
+};
