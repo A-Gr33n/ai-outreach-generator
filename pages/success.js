@@ -8,7 +8,12 @@ export default function Success() {
     const storedUser = localStorage.getItem("user");
 
     if (storedUser) {
-      const user = JSON.parse(storedUser);
+      let user = null;
+
+   if (typeof window !== "undefined") {
+  const stored = localStorage.getItem("user");
+  user = stored ? JSON.parse(stored) : null;
+}
 
       const updatedUser = {
         ...user,

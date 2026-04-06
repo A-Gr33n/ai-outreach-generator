@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 
 export default function Home() {
   const router = useRouter();
-  
+
   // Grouping related state
   const [form, setForm] = useState({ name: "", company: "", website: "", industry: "" });
   const [email, setEmail] = useState("");
@@ -11,44 +11,34 @@ export default function Home() {
   const [message, setMessage] = useState({ text: "", isError: false });
   const [user, setUser] = useState(null);
   const [usage, setUsage] = useState(0);
-  
-  
- 
 
-// 🔥 Reset if new month
-const now = new Date();
-const resetDate = new Date(user.resetDate);
+  useEffect(() => {
+    const loadAndCheckUser = () => {
+      const stored = localStorage.getItem("user");
+      if (!stored) return;
 
-if (
-  now.getMonth() !== resetDate.getMonth() ||
-  now.getFullYear() !== resetDate.getFullYear()
-) {
-  user.usage = 0;
-  user.resetDate = now.toISOString();
-  localStorage.setItem("user", JSON.stringify(user));
-}
+      let userData = JSON.parse(stored);
+      const now = new Date();
+      const resetDate = new Date(userData.resetDate || now);
 
-// 🔥 LIMIT CHECK
-if (user.plan === "starter" && user.usage >= 100) {
-  setMessage("❌ Monthly limit reached (100 emails)");
-  return;
-}
+      // 🔥 Reset if new month
+      if (
+        now.getMonth() !== resetDate.getMonth() ||
+        now.getFullYear() !== resetDate.getFullYear()
+      ) {
+        userData.usage = 0;
+        userData.resetDate = now.toISOString();
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
 
-user.usage += 1;
-localStorage.setItem("user", JSON.stringify(user));
+      // 🔥 Update state after potential reset
+      setUser(userData);
+    };
 
-useEffect(() => {
-  const loadUser = () => {
-    const stored = localStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
-  };
-
-  loadUser();
-
-  window.addEventListener("focus", loadUser);
-
-  return () => window.removeEventListener("focus", loadUser);
-}, []);
+    loadAndCheckUser();
+    window.addEventListener("focus", loadAndCheckUser);
+    return () => window.removeEventListener("focus", loadAndCheckUser);
+  }, []);
 
   const plan = user?.plan || "free";
 
@@ -64,8 +54,9 @@ useEffect(() => {
       return router.push("/login");
     }
 
-    if (plan === "free" && usage >= 5) {
-      return showMsg("❌ Free limit reached. Upgrade required.", true);
+    // 🔥 LIMIT CHECK (Moved inside the action function)
+    if (user.plan === "starter" && user?.usage >= 100) {
+      return showMsg("❌ Monthly limit reached (100 emails)", true);
     }
 
     try {
@@ -81,11 +72,11 @@ useEffect(() => {
 
       setEmail(data.email);
 
-      if (plan === "free") {
-        const newUsage = usage + 1;
-        setUsage(newUsage);
-        localStorage.setItem("usage", newUsage);
-      }
+      // Update usage logic
+      const updatedUser = { ...user, usage: (user?.usage || 0) + 1 };
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
       showMsg("✅ Email generated!");
     } catch (err) {
       showMsg("❌ Error generating email", true);
@@ -98,8 +89,43 @@ useEffect(() => {
     alert("Bulk working 🚀");
   };
 
-console.log("MESSAGE TYPE:", typeof message);
-console.log("MESSAGE VALUE:", message);
+  const handleGenerate = async () => {
+  let user = null;
+
+  if (typeof window !== "undefined") {
+    const stored = localStorage.getItem("user");
+    user = stored ? JSON.parse(stored) : null;
+  }
+
+  // ✅ RESET LOGIC HERE
+  if (user) {
+    const now = new Date();
+    const resetDate = new Date(user.resetDate);
+
+    if (
+      now.getMonth() !== resetDate.getMonth() ||
+      now.getFullYear() !== resetDate.getFullYear()
+    ) {
+      user.usage = 0;
+      user.resetDate = now.toISOString();
+      localStorage.setItem("user", JSON.stringify(user));
+    }
+  }
+
+  // ✅ LIMIT CHECK
+  if (user?.plan === "starter" && (user?.usage || 0) >= 100) {
+    setMessage("❌ Monthly limit reached (100 emails)");
+    return;
+  }
+
+  // 👉 CALL YOUR API HERE
+
+  // ✅ AFTER SUCCESS → INCREMENT USAGE
+  if (user) {
+    user.usage = (user.usage || 0) + 1;
+    localStorage.setItem("user", JSON.stringify(user));
+  }
+};
 
   return (
     <div style={styles.page}>
@@ -107,7 +133,7 @@ console.log("MESSAGE VALUE:", message);
         <h1 style={styles.title}>AI Sales Outreach</h1>
 
         <p>
-        Usage: {user.usage} / 100 this month
+        Usage: {user?.usage} / 100 this month
         </p>
 
         <div style={styles.planBox}>
