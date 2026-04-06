@@ -76,3 +76,52 @@ export default function HowToUse() {
     </div>
   );
 }
+
+const styles = {
+  page: {
+    padding: "80px 20px",
+    background: "#f9fafb",
+    minHeight: "100vh",
+    textAlign: "center",
+  },
+
+  title: {
+    fontSize: "42px",
+    fontWeight: "700",
+    marginBottom: "10px",
+  },
+
+  subtitle: {
+    fontSize: "18px",
+    color: "#666",
+    marginBottom: "50px",
+  },
+
+  grid: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "25px",
+    flexWrap: "wrap",
+  },
+
+  card: {
+    background: "#fff",
+    padding: "30px",
+    borderRadius: "16px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+    width: "280px",
+    textAlign: "left",
+    transition: "transform 0.2s ease",
+  },
+
+  step: {
+    fontSize: "20px",
+    marginBottom: "10px",
+  },
+
+  text: {
+    fontSize: "15px",
+    color: "#555",
+    lineHeight: "1.6",
+  },
+};

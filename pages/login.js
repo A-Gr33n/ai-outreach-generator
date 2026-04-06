@@ -35,12 +35,7 @@ console.log("BUTTON CLICKED");
           style={styles.input}
         />
         <form onSubmit={handleLogin}>
-      <input
-        type="email"
-        placeholder="Enter email"
-        value={form.email}
-        onChange={(e) => setForm({ email: e.target.value })}
-      />
+   
 
         <button onClick={handleLogin} type="submit" style={styles.button}>
           Continue
