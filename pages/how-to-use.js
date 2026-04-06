@@ -1,54 +1,41 @@
 export default function HowToUse() {
   return (
-    <div className="container">
-      <h1 style={{ marginBottom: "40px" }}>
+    <div style={styles.page}>
+      
+      {/* TITLE */}
+      <h1 style={styles.title}>
         How to Use the AI Sales Outreach Generator
       </h1>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 2fr 1fr",
-        gap: "20px",
-        alignItems: "stretch"
-      }}>
+      {/* GRID */}
+      <div style={styles.grid}>
         
         {/* LEFT COLUMN */}
-        <div className="card">
-          <h3>Single Email</h3>
-          <p style={{ marginTop: "10px" }}>Fill in:</p>
+        <div style={styles.card}>
+          <h3 style={styles.cardTitle}>Single Email</h3>
+          <p style={styles.label}>Fill in:</p>
 
-          <ul style={{ textAlign: "left", marginTop: "10px" }}>
+          <ul style={styles.list}>
             <li><strong>Contact Name</strong> – who you're emailing</li>
             <li><strong>Company</strong> – their company</li>
             <li><strong>Website</strong> – company site</li>
-            <li><strong>Industry</strong> – your business </li>
+            <li><strong>Industry</strong> – your business</li>
           </ul>
         </div>
 
         {/* CENTER COLUMN */}
-        <div className="card">
-          <h3>Bulk Email Generator</h3>
+        <div style={styles.cardHighlight}>
+          <h3 style={styles.cardTitle}>Bulk Email Generator</h3>
 
-          <ol style={{
-            textAlign: "left",
-            marginTop: "15px",
-            lineHeight: "1.8"
-          }}>
+          <ol style={styles.list}>
             <li>Prepare a CSV file</li>
             <li>Upload the CSV file</li>
-            <li>Click <strong>Generate Emails From CSV</strong></li>
-            <li>The AI generates emails for each lead</li>
-            <li>Download all emails as a CSV</li>
+            <li><strong>Generate Emails From CSV</strong></li>
+            <li>AI creates emails for each lead</li>
+            <li>Download all emails as CSV</li>
           </ol>
 
-          <div style={{
-            marginTop: "20px",
-            background: "#f3f4f6",
-            padding: "10px",
-            borderRadius: "8px",
-            fontSize: "14px",
-            textAlign: "left"
-          }}>
+          <div style={styles.csvBox}>
             <strong>Example CSV:</strong><br />
             name,company,website,industry<br />
             John Smith,TechFlow,techflow.com,SaaS<br />
@@ -57,14 +44,10 @@ export default function HowToUse() {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="card">
-          <h3>Tips</h3>
+        <div style={styles.card}>
+          <h3 style={styles.cardTitle}>Tips</h3>
 
-          <ul style={{
-            textAlign: "left",
-            marginTop: "10px",
-            lineHeight: "1.8"
-          }}>
+          <ul style={styles.list}>
             <li>Use accurate company data</li>
             <li>Choose correct industry</li>
             <li>Target decision-makers</li>
@@ -82,46 +65,47 @@ const styles = {
     padding: "80px 20px",
     background: "#f9fafb",
     minHeight: "100vh",
-    textAlign: "center",
   },
 
   title: {
-    fontSize: "42px",
+    textAlign: "center",
+    fontSize: "40px",
     fontWeight: "700",
-    marginBottom: "10px",
-  },
-
-  subtitle: {
-    fontSize: "18px",
-    color: "#666",
-    marginBottom: "50px",
+    marginBottom: "60px",
   },
 
   grid: {
-    display: "flex",
-    justifyContent: "center",
+    display: "grid",
+    gridTemplateColumns: "1fr 2fr 1fr",
     gap: "25px",
-    flexWrap: "wrap",
+    maxWidth: "1100px",
+    margin: "0 auto",
   },
 
   card: {
     background: "#fff",
-    padding: "30px",
+    padding: "25px",
     borderRadius: "16px",
     boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-    width: "280px",
-    textAlign: "left",
-    transition: "transform 0.2s ease",
   },
 
-  step: {
+  cardHighlight: {
+    background: "#fff",
+    padding: "30px",
+    borderRadius: "16px",
+    boxShadow: "0 15px 40px rgba(0,0,0,0.12)",
+    transform: "scale(1.03)",
+  },
+
+  cardTitle: {
     fontSize: "20px",
+    fontWeight: "600",
     marginBottom: "10px",
   },
 
-  text: {
-    fontSize: "15px",
-    color: "#555",
-    lineHeight: "1.6",
+  label: {
+    marginTop: "10px",
+    fontWeight: "500",
   },
-};
+
+}
