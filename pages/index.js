@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
-
 export default function Home() {
   const router = useRouter();
   
@@ -13,6 +12,30 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [usage, setUsage] = useState(0);
   
+  
+ 
+
+// 🔥 Reset if new month
+const now = new Date();
+const resetDate = new Date(user.resetDate);
+
+if (
+  now.getMonth() !== resetDate.getMonth() ||
+  now.getFullYear() !== resetDate.getFullYear()
+) {
+  user.usage = 0;
+  user.resetDate = now.toISOString();
+  localStorage.setItem("user", JSON.stringify(user));
+}
+
+// 🔥 LIMIT CHECK
+if (user.plan === "starter" && user.usage >= 100) {
+  setMessage("❌ Monthly limit reached (100 emails)");
+  return;
+}
+
+user.usage += 1;
+localStorage.setItem("user", JSON.stringify(user));
 
 useEffect(() => {
   const loadUser = () => {
@@ -83,11 +106,17 @@ console.log("MESSAGE VALUE:", message);
       <div style={styles.container}>
         <h1 style={styles.title}>AI Sales Outreach</h1>
 
+        <p>
+        Usage: {user.usage} / 100 this month
+        </p>
+
         <div style={styles.planBox}>
           <strong>Plan:</strong> {plan.toUpperCase()}
           {plan === "free" && <div>Usage: {Math.min(usage, 5)}/5</div>}
-        </div>
 
+
+        </div>
+                    
         {/* FORM */}
         <div style={styles.card}>
           <input name="name" placeholder="Name" style={styles.input} onChange={handleChange} />

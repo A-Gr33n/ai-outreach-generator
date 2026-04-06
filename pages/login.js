@@ -15,6 +15,8 @@ console.log("BUTTON CLICKED");
   const user = {
     email: email,
     plan: "free", // default plan
+    usage: 0,
+  resetDate: new Date().toISOString(), // track month start
   };
 
   localStorage.setItem("user", JSON.stringify(user));
