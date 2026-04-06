@@ -39,31 +39,25 @@ export default function Account() {
 
 const handleManageSubscription = async () => {
   try {
-  
-
-    const data = await res.json();
-
-     console.log("API RESPONSE:", data); // 👈 ADD THIS
-
-     window.location.href = data.url;
-
     const res = await fetch("/api/customer-portal", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-   
       body: JSON.stringify({
-  customerId: "cus_UGzeYXBmFkD5jm", // 👈 paste from Stripe
-}),
-
-      
-
+        customerId: "cus_UGzeYXBmFkD5jm", // ✅ your Stripe customer ID
+      }),
     });
 
+    const data = await res.json();
 
-    // ✅ REDIRECT TO STRIPE PORTAL
-    window.location.href = data.url;
+    console.log("API RESPONSE:", data);
+
+    if (data.url) {
+      window.location.href = data.url; // ✅ redirect to Stripe
+    } else {
+      alert("No portal URL returned");
+    }
 
   } catch (err) {
     console.error(err);
