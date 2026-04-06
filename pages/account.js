@@ -19,6 +19,7 @@ export default function Account() {
 
 
 
+
    if (user === null) {
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>

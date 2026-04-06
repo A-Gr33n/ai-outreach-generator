@@ -5,16 +5,19 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
-    const user = {
-      email,
-      plan: "free",
-    };
+const handleLogin = () => {
+  // Example (replace with your actual login logic)
+  const email = form.email;
 
-    localStorage.setItem("user", JSON.stringify(user));
-
-    router.push("/");
+  const user = {
+    email: email,
+    plan: "free", // default plan
   };
+
+  localStorage.setItem("user", JSON.stringify(user));
+
+  router.push("/"); // redirect after login
+};
 
   return (
     <div style={styles.page}>
