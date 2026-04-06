@@ -52,30 +52,3 @@ useEffect(() => {
   );
 }
 
-const navBtn = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "1px solid #ddd",
-  background: "#fff",
-  cursor: "pointer",
-};
-
-const loginBtn = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "none",
-  background: "linear-gradient(135deg, #4b4ded, #6c63ff)",
-  color: "#fff",
-  fontWeight: "600",
-  cursor: "pointer",
-};
-
-const logoutBtn = {
-  padding: "10px 16px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#ef4444",
-  color: "#fff",
-  fontWeight: "600",
-  cursor: "pointer",
-};
