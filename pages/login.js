@@ -24,8 +24,12 @@ export default function Login() {
       };
     }
 
-    localStorage.setItem("user", JSON.stringify(user));
-    router.push("/");
+   localStorage.setItem("user", JSON.stringify(user));
+
+// 🔥 ADD THIS LINE
+window.dispatchEvent(new Event("storage"));
+
+router.push("/");
   };
 
   return (

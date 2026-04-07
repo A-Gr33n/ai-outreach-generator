@@ -1,54 +1,57 @@
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Navbar() {
-  const router = useRouter();
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
-  // 🔥 Load user on mount
+  // ✅ LOAD USER + LISTEN FOR CHANGES
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    setUser(stored ? JSON.parse(stored) : null);
+    const loadUser = () => {
+      const stored = localStorage.getItem("user");
+      setUser(stored ? JSON.parse(stored) : null);
+    };
+
+    loadUser();
+
+    // 🔥 KEY FIX: listen for updates
+    window.addEventListener("storage", loadUser);
+    window.addEventListener("focus", loadUser);
+
+    return () => {
+      window.removeEventListener("storage", loadUser);
+      window.removeEventListener("focus", loadUser);
+    };
   }, []);
 
-  // 🔥 Logout function
+  // ✅ LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("user");
-    setUser(null); // ✅ force UI update
+    setUser(null);
+
+    // 🔥 force UI update across app
+    window.dispatchEvent(new Event("storage"));
+
     router.push("/login");
   };
 
-
   return (
     <div style={styles.nav}>
-      <h2 style={styles.logo} onClick={() => router.push("/")}>
-        AI Outreach
-      </h2>
+      <h2 style={styles.logo}>AI Outreach</h2>
 
-      <div style={styles.navLinks}>
-        <button style={styles.btn} onClick={() => router.push("/")}>
-          Home
-        </button>
+      <div style={styles.links}>
+        <button onClick={() => router.push("/")}>Home</button>
+        <button onClick={() => router.push("/pricing")}>Pricing</button>
+        <button onClick={() => router.push("/how-to-use")}>How to use</button>
+        <button onClick={() => router.push("/account")}>Account</button>
 
-        <button style={styles.btn} onClick={() => router.push("/pricing")}>
-          Pricing
-        </button>
-
-        <button style={styles.btn} onClick={() => router.push("/how-to-use")}>
-          How to use
-        </button>
-
-        <button style={styles.btn} onClick={() => router.push("/account")}>
-          Account
-        </button>
-
-        {/* 🔥 THIS IS THE KEY PART */}
+        {/* 🔥 CONDITIONAL BUTTON */}
         {user ? (
-          <button style={styles.btnDanger} onClick={handleLogout}>
+          <button style={styles.logoutBtn} onClick={handleLogout}>
             Logout
           </button>
         ) : (
-          <button style={styles.btnPrimary} onClick={() => router.push("/login")}>
+          <button style={styles.loginBtn} onClick={() => router.push("/login")}>
             Login
           </button>
         )}
@@ -57,64 +60,40 @@ export default function Navbar() {
   );
 }
 
-
-// Wrap all your objects inside one "styles" object
 const styles = {
   nav: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "20px 40px",
+    padding: "15px 30px",
     background: "#fff",
     borderBottom: "1px solid #eee",
-    position: "sticky",
-    top: 0,
-    zIndex: 1000,
   },
 
   logo: {
-    fontSize: "20px",
-    fontWeight: "bold",
-    cursor: "pointer",
+    fontWeight: "700",
   },
 
-  navLinks: {
+  links: {
     display: "flex",
-    gap: "12px",
+    gap: "10px",
   },
 
-  btn: {
-    padding: "10px 16px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    background: "#fff",
-    cursor: "pointer",
-    fontSize: "14px",
-    transition: "all 0.2s ease",
-  },
-
-  btnHover: {
-    background: "#f5f5f5",
-  },
-
-  btnPrimary: {
-    padding: "10px 16px",
+  loginBtn: {
+    padding: "8px 14px",
     borderRadius: "8px",
     border: "none",
-    background: "linear-gradient(135deg, #4b4ded, #6c63ff)",
+    background: "#4b4ded",
     color: "#fff",
-    fontWeight: "600",
     cursor: "pointer",
-    transition: "all 0.2s ease",
   },
 
-  btnDanger: {
-    padding: "10px 16px",
+  logoutBtn: {
+    padding: "8px 14px",
     borderRadius: "8px",
     border: "none",
     background: "#ef4444",
     color: "#fff",
-    fontWeight: "600",
     cursor: "pointer",
   },
 };
