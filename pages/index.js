@@ -15,7 +15,7 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
 
-  // ✅ LIMITS
+  // ✅ PLAN LIMITS
   const getLimit = (plan) => {
     if (plan === "free") return 3;
     if (plan === "starter") return 100;
@@ -84,7 +84,7 @@ export default function Home() {
 
       setMessage("✅ Email generated");
     } catch {
-      setMessage("❌ Error");
+      setMessage("❌ Error generating email");
     }
   };
 
@@ -93,40 +93,89 @@ export default function Home() {
 
   return (
     <div style={styles.page}>
-      <h1>AI Sales Outreach</h1>
+      <div style={styles.container}>
+        <h1 style={styles.title}>AI Sales Outreach</h1>
 
-      <p>
-        Usage: {user?.usage || 0} / {limit === Infinity ? "∞" : limit}
-      </p>
+        {/* ✅ USAGE */}
+        <p style={styles.usage}>
+          Usage: {user?.usage || 0} / {limit === Infinity ? "∞" : limit}
+        </p>
 
-      <p>Plan: {plan}</p>
+        {/* ✅ PLAN BOX */}
+        <div style={styles.planBox}>
+          <strong>Plan:</strong> {plan.toUpperCase()}
+        </div>
 
-      <input name="name" placeholder="Name" onChange={handleChange} />
-      <input name="company" placeholder="Company" onChange={handleChange} />
-      <input name="website" placeholder="Website" onChange={handleChange} />
-      <input name="industry" placeholder="Industry" onChange={handleChange} />
+        {/* FORM */}
+        <div style={styles.card}>
+          <input
+            name="name"
+            placeholder="Name"
+            style={styles.input}
+            onChange={handleChange}
+          />
+          <input
+            name="company"
+            placeholder="Company"
+            style={styles.input}
+            onChange={handleChange}
+          />
+          <input
+            name="website"
+            placeholder="Website"
+            style={styles.input}
+            onChange={handleChange}
+          />
+          <input
+            name="industry"
+            placeholder="Industry"
+            style={styles.input}
+            onChange={handleChange}
+          />
 
-      <button onClick={generateEmail}>Generate Email</button>
+          <button style={styles.button} onClick={generateEmail}>
+            Generate Email
+          </button>
+        </div>
 
-      <p>{message}</p>
+        {/* MESSAGE */}
+        {message && (
+          <p
+            style={{
+              ...styles.message,
+              color: message.includes("❌") ? "red" : "green",
+            }}
+          >
+            {message}
+          </p>
+        )}
 
-      {email && <pre>{email}</pre>}
+        {/* OUTPUT */}
+        {email && (
+          <div style={styles.card}>
+            <h3>Generated Email</h3>
+            <pre style={styles.emailBox}>{email}</pre>
+
+            <button
+              style={styles.copyBtn}
+              onClick={() => navigator.clipboard.writeText(email)}
+            >
+              Copy Email
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
-
 
 const styles = {
   page: {
     minHeight: "100vh",
     display: "flex",
     justifyContent: "center",
-    padding: "20px",
+    alignItems: "center",
     background: "#f5f6fa",
-    fontFamily: "sans-serif",
-    padding: "40px",
-    textAlign: "center",
   },
 
   container: {
@@ -139,6 +188,11 @@ const styles = {
 
   title: {
     textAlign: "center",
+  },
+
+  usage: {
+    textAlign: "center",
+    fontWeight: "500",
   },
 
   planBox: {
@@ -174,25 +228,14 @@ const styles = {
     cursor: "pointer",
   },
 
-  message: {
-    textAlign: "center",
-    fontWeight: "600",
-  },
-
   emailBox: {
     whiteSpace: "pre-wrap",
     background: "#f9f9f9",
     padding: "15px",
     borderRadius: "8px",
+    border: "1px solid #eee",
+    fontSize: "14px",
   },
-
-  uploadBox: {
-  padding: "20px",
-  border: "2px dashed #ccc",
-  borderRadius: "10px",
-  textAlign: "center",
-  cursor: "pointer",
-},
 
   copyBtn: {
     padding: "10px",
@@ -203,13 +246,8 @@ const styles = {
     cursor: "pointer",
   },
 
-  upgradeBtn: {
-    padding: "12px",
-    borderRadius: "10px",
-    border: "none",
+  message: {
+    textAlign: "center",
     fontWeight: "600",
-    cursor: "pointer",
-    background: "linear-gradient(135deg, #ff9f43, #ff6b6b)",
-    color: "#fff",
   },
 };
