@@ -12,16 +12,15 @@ export default function Home() {
   });
 
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
-  const [csvFile, setCsvFile] = useState(null);
+  const [message, setMessage] = useState("");
 
-  // ✅ PLAN LIMITS
+  // ✅ LIMITS
   const getLimit = (plan) => {
     if (plan === "free") return 3;
     if (plan === "starter") return 100;
     if (plan === "pro") return 1000;
-    return 0;
+    if (plan === "agency") return Infinity;
   };
 
   // ✅ LOAD USER + RESET MONTHLY
@@ -32,40 +31,34 @@ export default function Home() {
     let userData = JSON.parse(stored);
 
     const now = new Date();
-    const resetDate = new Date(userData.resetDate || now);
+    const resetDate = new Date(userData.resetDate);
 
-    // 🔥 Reset every new month
     if (
       now.getMonth() !== resetDate.getMonth() ||
       now.getFullYear() !== resetDate.getFullYear()
     ) {
       userData.usage = 0;
       userData.resetDate = now.toISOString();
-      localStorage.setItem("user", JSON.stringify(userData));
     }
 
     setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
   }, []);
-
-  const plan = user?.plan || "free";
-  const usage = user?.usage || 0;
-  const limit = getLimit(plan);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ MAIN GENERATE FUNCTION
   const generateEmail = async () => {
     if (!user) {
-      alert("Please login first");
+      alert("Login first");
       return router.push("/login");
     }
 
-    // 🔥 LIMIT CHECK
-    if (usage >= limit) {
-      setMessage(`❌ Limit reached (${limit} emails/month)`);
-      return;
+    const limit = getLimit(user.plan);
+
+    if ((user.usage || 0) >= limit) {
+      return setMessage(`❌ Limit reached (${limit}/month)`);
     }
 
     try {
@@ -73,171 +66,56 @@ export default function Home() {
 
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
       const data = await res.json();
-
-      if (!data.email) throw new Error("No email returned");
-
       setEmail(data.email);
 
-      // 🔥 UPDATE USAGE
+      // ✅ INCREMENT USAGE
       const updatedUser = {
         ...user,
-        usage: usage + 1,
+        usage: (user.usage || 0) + 1,
       };
 
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
       setMessage("✅ Email generated");
-
-    } catch (err) {
-      console.error(err);
-      setMessage("❌ Error generating email");
+    } catch {
+      setMessage("❌ Error");
     }
   };
 
-  const handleBulkGenerate = () => {
-  if (!user) {
-    alert("Please login");
-    return router.push("/login");
-  }
-
-  if (!["pro", "agency"].includes(plan)) {
-    alert("Upgrade to PRO to use bulk generation");
-    return;
-  }
-
-  alert("Bulk generation coming next 🚀");
-};
+  const plan = user?.plan || "free";
+  const limit = getLimit(plan);
 
   return (
     <div style={styles.page}>
-      <div style={styles.container}>
-        <h1 style={styles.title}>AI Sales Outreach</h1>
+      <h1>AI Sales Outreach</h1>
 
-        {/* ✅ USAGE DISPLAY */}
-        <p style={{ textAlign: "center" }}>
-          Usage: {usage} / {limit}
-        </p>
+      <p>
+        Usage: {user?.usage || 0} / {limit === Infinity ? "∞" : limit}
+      </p>
 
-        <div style={styles.planBox}>
-          <strong>Plan:</strong> {plan.toUpperCase()}
-        </div>
+      <p>Plan: {plan}</p>
 
-        {/* FORM */}
-        <div style={styles.card}>
-          <input
-            name="name"
-            placeholder="Name"
-            style={styles.input}
-            onChange={handleChange}
-          />
-          <input
-            name="company"
-            placeholder="Company"
-            style={styles.input}
-            onChange={handleChange}
-          />
-          <input
-            name="website"
-            placeholder="Website"
-            style={styles.input}
-            onChange={handleChange}
-          />
-          <input
-            name="industry"
-            placeholder="Industry"
-            style={styles.input}
-            onChange={handleChange}
-          />
+      <input name="name" placeholder="Name" onChange={handleChange} />
+      <input name="company" placeholder="Company" onChange={handleChange} />
+      <input name="website" placeholder="Website" onChange={handleChange} />
+      <input name="industry" placeholder="Industry" onChange={handleChange} />
 
-          <button style={styles.button} onClick={generateEmail}>
-            Generate Email
-          </button>
-        </div>
+      <button onClick={generateEmail}>Generate Email</button>
 
-        {/* MESSAGE */}
-        {message && (
-          <p style={styles.message}>
-            {message}
-          </p>
-        )}
+      <p>{message}</p>
 
-        {/* EMAIL OUTPUT */}
-        {email && (
-          <div style={styles.card}>
-            <h3>Generated Email</h3>
-            <pre style={styles.emailBox}>{email}</pre>
-
-            <button
-              style={styles.copyBtn}
-              onClick={() => navigator.clipboard.writeText(email)}
-            >
-              Copy Email
-            </button>
-          </div>
-        )}
-
-        {/* 🔥 UPGRADE CTA */}
-        {usage >= limit && (
-          <button
-            style={styles.upgradeBtn}
-            onClick={() => router.push("/pricing")}
-          >
-            🚀 Upgrade Plan
-          </button>
-        )}
-
-        {/* 🔥 BULK GENERATOR */}
-<div style={styles.card}>
-  <h2>📂 Bulk Generate (CSV)</h2>
-
-  <label style={styles.uploadBox}>
-    <input
-      type="file"
-      accept=".csv"
-      hidden
-      onChange={(e) => setCsvFile(e.target.files[0])}
-    />
-    {csvFile ? `📄 ${csvFile.name}` : "Click to upload CSV"}
-  </label>
-
-  <button
-    style={{
-      ...styles.button,
-      opacity: ["pro", "agency"].includes(plan) ? 1 : 0.5,
-      cursor: ["pro", "agency"].includes(plan)
-        ? "pointer"
-        : "not-allowed",
-    }}
-    disabled={!["pro", "agency"].includes(plan)}
-    onClick={handleBulkGenerate}
-  >
-    Generate From CSV
-  </button>
-
-  {/* 🔒 LOCK MESSAGE */}
-  {!["pro", "agency"].includes(plan) && (
-    <button
-      style={styles.upgradeBtn}
-      onClick={() => router.push("/pricing")}
-    >
-      🔒 Unlock Bulk Feature
-    </button>
-  )}
-</div>
-      </div>
+      {email && <pre>{email}</pre>}
     </div>
-
-    
   );
 }
+
+
 
 const styles = {
   page: {
@@ -247,6 +125,8 @@ const styles = {
     padding: "20px",
     background: "#f5f6fa",
     fontFamily: "sans-serif",
+    padding: "40px",
+    textAlign: "center",
   },
 
   container: {

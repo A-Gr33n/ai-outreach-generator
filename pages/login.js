@@ -4,55 +4,53 @@ import { useRouter } from "next/router";
 export default function Login() {
   const [email, setEmail] = useState("");
   const router = useRouter();
-  const [form, setForm] = useState({ email: "" });
 
-const handleLogin = () => {
-  
-console.log("BUTTON CLICKED");
-  // Example (replace with your actual login logic)
-  const email = form.email;
+  const handleLogin = () => {
+    if (!email) return alert("Enter email");
 
-  const user = {
-  email: email,
-  plan: "free",
-  usage: 0,
-  resetDate: new Date().toISOString(),
-};
+    let user = JSON.parse(localStorage.getItem("user"));
 
-localStorage.setItem("user", JSON.stringify(user));
+    // ✅ SAME USER → KEEP DATA
+    if (user && user.email === email) {
+      // keep existing
+    } else {
+      // ✅ NEW USER
+      user = {
+        email,
+        plan: "free",
+        usage: 0,
+        resetDate: new Date().toISOString(),
+        customerId: null,
+      };
+    }
 
-  router.push("/"); // redirect after login
-};
-
+    localStorage.setItem("user", JSON.stringify(user));
+    router.push("/");
+  };
 
   return (
-    <div style={styles.page}>
+    <div style={styles.container}>
       <div style={styles.card}>
         <h1>Login / Register</h1>
 
         <input
+          style={styles.input}
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
         />
-        <form onSubmit={handleLogin}>
-   
 
-        <button onClick={handleLogin} type="submit" style={styles.button}>
+        <button style={styles.button} onClick={handleLogin}>
           Continue
         </button>
-
-    </form>
-
       </div>
     </div>
   );
 }
 
 const styles = {
-  page: {
-    minHeight: "100vh",
+  container: {
+    height: "100vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -65,13 +63,17 @@ const styles = {
     textAlign: "center",
   },
   input: {
+    padding: "12px",
+    width: "250px",
     marginTop: "20px",
-    padding: "10px",
-    width: "100%",
   },
   button: {
     marginTop: "20px",
-    padding: "10px",
-    width: "100%",
+    padding: "12px",
+    background: "#4b4ded",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
   },
 };
