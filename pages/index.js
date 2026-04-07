@@ -14,6 +14,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
+  const [csvFile, setCsvFile] = useState(null);
 
   // ✅ PLAN LIMITS
   const getLimit = (plan) => {
@@ -49,6 +50,7 @@ export default function Home() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ✅ SINGLE EMAIL GENERATE
   const generateEmail = async () => {
     if (!user) {
       alert("Login first");
@@ -73,7 +75,6 @@ export default function Home() {
       const data = await res.json();
       setEmail(data.email);
 
-      // ✅ INCREMENT USAGE
       const updatedUser = {
         ...user,
         usage: (user.usage || 0) + 1,
@@ -88,6 +89,22 @@ export default function Home() {
     }
   };
 
+  // ✅ BULK GENERATE (LOCKED FOR FREE/STARTER)
+  const handleBulkGenerate = () => {
+    if (!user) return router.push("/login");
+
+    if (user.plan === "free" || user.plan === "starter") {
+      return alert("Upgrade to PRO to use Bulk Generator");
+    }
+
+    if (!csvFile) {
+      return alert("Upload CSV first");
+    }
+
+    // 🚀 placeholder (you can connect backend later)
+    alert("Bulk generation started 🚀");
+  };
+
   const plan = user?.plan || "free";
   const limit = getLimit(plan);
 
@@ -96,42 +113,22 @@ export default function Home() {
       <div style={styles.container}>
         <h1 style={styles.title}>AI Sales Outreach</h1>
 
-        {/* ✅ USAGE */}
+        {/* USAGE */}
         <p style={styles.usage}>
           Usage: {user?.usage || 0} / {limit === Infinity ? "∞" : limit}
         </p>
 
-        {/* ✅ PLAN BOX */}
+        {/* PLAN */}
         <div style={styles.planBox}>
           <strong>Plan:</strong> {plan.toUpperCase()}
         </div>
 
         {/* FORM */}
         <div style={styles.card}>
-          <input
-            name="name"
-            placeholder="Name"
-            style={styles.input}
-            onChange={handleChange}
-          />
-          <input
-            name="company"
-            placeholder="Company"
-            style={styles.input}
-            onChange={handleChange}
-          />
-          <input
-            name="website"
-            placeholder="Website"
-            style={styles.input}
-            onChange={handleChange}
-          />
-          <input
-            name="industry"
-            placeholder="Industry"
-            style={styles.input}
-            onChange={handleChange}
-          />
+          <input name="name" placeholder="Name" style={styles.input} onChange={handleChange} />
+          <input name="company" placeholder="Company" style={styles.input} onChange={handleChange} />
+          <input name="website" placeholder="Website" style={styles.input} onChange={handleChange} />
+          <input name="industry" placeholder="Industry" style={styles.input} onChange={handleChange} />
 
           <button style={styles.button} onClick={generateEmail}>
             Generate Email
@@ -140,12 +137,7 @@ export default function Home() {
 
         {/* MESSAGE */}
         {message && (
-          <p
-            style={{
-              ...styles.message,
-              color: message.includes("❌") ? "red" : "green",
-            }}
-          >
+          <p style={{ ...styles.message, color: message.includes("❌") ? "red" : "green" }}>
             {message}
           </p>
         )}
@@ -164,6 +156,42 @@ export default function Home() {
             </button>
           </div>
         )}
+
+        {/* 🔥 BULK SECTION */}
+        <div style={styles.card}>
+          <h2>📂 Bulk Email Generator</h2>
+
+          <label style={styles.uploadBox}>
+            <input
+              type="file"
+              accept=".csv"
+              hidden
+              onChange={(e) => setCsvFile(e.target.files[0])}
+            />
+            {csvFile ? `📄 ${csvFile.name}` : "Click to upload CSV"}
+          </label>
+
+          <button
+            style={{
+              ...styles.button,
+              opacity: (plan === "free" || plan === "starter") ? 0.5 : 1,
+              cursor: (plan === "free" || plan === "starter") ? "not-allowed" : "pointer",
+            }}
+            disabled={plan === "free" || plan === "starter"}
+            onClick={handleBulkGenerate}
+          >
+            Generate From CSV
+          </button>
+
+          {(plan === "free" || plan === "starter") && (
+            <button
+              style={styles.upgradeBtn}
+              onClick={() => router.push("/pricing")}
+            >
+              🔒 Upgrade to unlock Bulk
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -228,6 +256,14 @@ const styles = {
     cursor: "pointer",
   },
 
+  uploadBox: {
+    padding: "20px",
+    border: "2px dashed #ccc",
+    borderRadius: "10px",
+    textAlign: "center",
+    cursor: "pointer",
+  },
+
   emailBox: {
     whiteSpace: "pre-wrap",
     background: "#f9f9f9",
@@ -249,5 +285,16 @@ const styles = {
   message: {
     textAlign: "center",
     fontWeight: "600",
+  },
+
+  upgradeBtn: {
+    marginTop: "10px",
+    padding: "12px",
+    borderRadius: "10px",
+    border: "none",
+    fontWeight: "600",
+    cursor: "pointer",
+    background: "linear-gradient(135deg, #ff9f43, #ff6b6b)",
+    color: "#fff",
   },
 };
