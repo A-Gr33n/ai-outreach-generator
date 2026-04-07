@@ -14,6 +14,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
+  const [csvFile, setCsvFile] = useState(null);
 
   // ✅ PLAN LIMITS
   const getLimit = (plan) => {
@@ -101,6 +102,20 @@ export default function Home() {
     }
   };
 
+  const handleBulkGenerate = () => {
+  if (!user) {
+    alert("Please login");
+    return router.push("/login");
+  }
+
+  if (!["pro", "agency"].includes(plan)) {
+    alert("Upgrade to PRO to use bulk generation");
+    return;
+  }
+
+  alert("Bulk generation coming next 🚀");
+};
+
   return (
     <div style={styles.page}>
       <div style={styles.container}>
@@ -178,8 +193,49 @@ export default function Home() {
             🚀 Upgrade Plan
           </button>
         )}
+
+        {/* 🔥 BULK GENERATOR */}
+<div style={styles.card}>
+  <h2>📂 Bulk Generate (CSV)</h2>
+
+  <label style={styles.uploadBox}>
+    <input
+      type="file"
+      accept=".csv"
+      hidden
+      onChange={(e) => setCsvFile(e.target.files[0])}
+    />
+    {csvFile ? `📄 ${csvFile.name}` : "Click to upload CSV"}
+  </label>
+
+  <button
+    style={{
+      ...styles.button,
+      opacity: ["pro", "agency"].includes(plan) ? 1 : 0.5,
+      cursor: ["pro", "agency"].includes(plan)
+        ? "pointer"
+        : "not-allowed",
+    }}
+    disabled={!["pro", "agency"].includes(plan)}
+    onClick={handleBulkGenerate}
+  >
+    Generate From CSV
+  </button>
+
+  {/* 🔒 LOCK MESSAGE */}
+  {!["pro", "agency"].includes(plan) && (
+    <button
+      style={styles.upgradeBtn}
+      onClick={() => router.push("/pricing")}
+    >
+      🔒 Unlock Bulk Feature
+    </button>
+  )}
+</div>
       </div>
     </div>
+
+    
   );
 }
 
@@ -249,6 +305,14 @@ const styles = {
     padding: "15px",
     borderRadius: "8px",
   },
+
+  uploadBox: {
+  padding: "20px",
+  border: "2px dashed #ccc",
+  borderRadius: "10px",
+  textAlign: "center",
+  cursor: "pointer",
+},
 
   copyBtn: {
     padding: "10px",
