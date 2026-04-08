@@ -125,7 +125,8 @@ export default function Home() {
     alert("Bulk generation started 🚀");
   };
 
-  const plan = "free"; 
+  const plan = "free";
+  const usage = 0;
   const limit = getLimit(plan);
 
   return (
@@ -135,7 +136,7 @@ export default function Home() {
 
         {/* USAGE */}
         <p style={styles.usage}>
-          Usage: {user?.usage || 0} / {limit === Infinity ? "∞" : limit}
+          Usage: {usage} / 3 / {limit === Infinity ? "∞" : limit}
         </p>
 
         {/* PLAN */}
