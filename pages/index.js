@@ -81,7 +81,11 @@ export default function Home() {
       };
 
       setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+     // 🔥 SAVE ACTIVE USER
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+
+   // 🔥 SAVE TO USER DATABASE (by email)
+    localStorage.setItem(`user_${updatedUser.email}`, JSON.stringify(updatedUser));
 
       setMessage("✅ Email generated");
     } catch {

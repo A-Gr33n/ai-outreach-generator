@@ -5,32 +5,38 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
-    if (!email) return alert("Enter email");
+const handleLogin = () => {
+  if (!email) return alert("Enter email");
 
-    let user = JSON.parse(localStorage.getItem("user"));
+  // 🔥 CHECK IF USER EXISTS
+  const existing = localStorage.getItem(`user_${email}`);
 
-    // ✅ SAME USER → KEEP DATA
-    if (user && user.email === email) {
-      // keep existing
-    } else {
-      // ✅ NEW USER
-      user = {
-        email,
-        plan: "free",
-        usage: 0,
-        resetDate: new Date().toISOString(),
-        customerId: null,
-      };
-    }
+  let user;
 
-   localStorage.setItem("user", JSON.stringify(user));
+  if (existing) {
+    // ✅ RETURNING USER → KEEP DATA
+    user = JSON.parse(existing);
+  } else {
+    // ✅ NEW USER → CREATE
+    user = {
+      email,
+      plan: "free",
+      usage: 0,
+      resetDate: new Date().toISOString(),
+    };
 
-// 🔥 ADD THIS LINE
-window.dispatchEvent(new Event("storage"));
+    // 🔥 SAVE USER DATABASE
+    localStorage.setItem(`user_${email}`, JSON.stringify(user));
+  }
 
-router.push("/");
-  };
+  // 🔥 SET ACTIVE SESSION
+  localStorage.setItem("user", JSON.stringify(user));
+
+  // 🔥 UPDATE NAVBAR
+  window.dispatchEvent(new Event("storage"));
+
+  router.push("/");
+};
 
   return (
     <div style={styles.container}>
