@@ -1,37 +1,32 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
-  // ✅ LOAD USER + LISTEN FOR CHANGES
   useEffect(() => {
-    const loadUser = () => {
-      const stored = localStorage.getItem("user");
-      setUser(stored ? JSON.parse(stored) : null);
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
     };
 
-    loadUser();
+    getUser();
 
-    // 🔥 KEY FIX: listen for updates
-    window.addEventListener("storage", loadUser);
-    window.addEventListener("focus", loadUser);
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
 
     return () => {
-      window.removeEventListener("storage", loadUser);
-      window.removeEventListener("focus", loadUser);
+      listener.subscription.unsubscribe();
     };
   }, []);
 
-  // ✅ LOGOUT
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-
-    // 🔥 force UI update across app
-    window.dispatchEvent(new Event("storage"));
-
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     router.push("/login");
   };
 
@@ -45,7 +40,6 @@ export default function Navbar() {
         <button onClick={() => router.push("/how-to-use")}>How to use</button>
         <button onClick={() => router.push("/account")}>Account</button>
 
-        {/* 🔥 CONDITIONAL BUTTON */}
         {user ? (
           <button style={styles.logoutBtn} onClick={handleLogout}>
             Logout
@@ -64,20 +58,12 @@ const styles = {
   nav: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
-    padding: "15px 30px",
+    padding: "20px",
     background: "#fff",
     borderBottom: "1px solid #eee",
   },
-
-  logo: {
-    fontWeight: "700",
-  },
-
-  links: {
-    display: "flex",
-    gap: "10px",
-  },
+  logo: { fontWeight: "700" },
+  links: { display: "flex", gap: "10px" },
 
   loginBtn: {
     padding: "8px 14px",

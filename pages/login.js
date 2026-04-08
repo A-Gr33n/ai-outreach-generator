@@ -1,72 +1,48 @@
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
 
 export default function Login() {
   const [email, setEmail] = useState("");
-  const router = useRouter();
+  const [message, setMessage] = useState("");
 
-const handleLogin = () => {
-  if (!email) return alert("Enter email");
+  const handleLogin = async () => {
+    if (!email) return alert("Enter email");
 
-  // ✅ BASIC EMAIL VALIDATION
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; {
-
-  if (!emailRegex.test(email)) {
-    return alert("Please enter a valid email address");
-  }
-
-  // 🔥 CHECK EXISTING USER
-  const existing = localStorage.getItem(`user_${email}`);
-
-  let user;
-
-  if (existing) {
-    user = JSON.parse(existing);
-  } else {
-    user = {
+    const { error } = await supabase.auth.signInWithOtp({
       email,
-      plan: "free",
-      usage: 0,
-      resetDate: new Date().toISOString(),
-    };
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
 
-    localStorage.setItem(`user_${email}`, JSON.stringify(user));
-  }
-
-  localStorage.setItem("user", JSON.stringify(user));
-
-  window.dispatchEvent(new Event("storage"));
-
-  router.push("/");
-};
-
-  // 🔥 UPDATE NAVBAR
-  window.dispatchEvent(new Event("storage"));
-
-  router.push("/");
-};
+  
+    if (error) {
+      setMessage("❌ Error sending email");
+    } else {
+      setMessage("✅ Check your email for login link");
+    }
+  };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1>Login / Register</h1>
+    <div style={{ textAlign: "center", marginTop: "100px" }}>
+      <h1>Login</h1>
 
-   <input
-    type="email"
-    placeholder="Enter your email"
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-   required
-    />
+      <input
+        type="email"
+        placeholder="Enter real email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-        <button style={styles.button} onClick={handleLogin}>
-          Continue
-        </button>
-      </div>
+      <br /><br />
+
+      <button onClick={handleLogin}>Send Magic Link</button>
+
+      <p>{message}</p>
     </div>
   );
-}
 
+}
 
 const styles = {
   container: {

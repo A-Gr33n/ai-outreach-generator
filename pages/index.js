@@ -1,5 +1,18 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
+
+useEffect(() => {
+  const loadUser = async () => {
+    const { data } = await supabase.auth.getUser();
+
+    if (data.user) {
+      setUser(data.user);
+    }
+  };
+
+  loadUser();
+}, []);
 
 export default function Home() {
   const router = useRouter();
@@ -112,7 +125,7 @@ export default function Home() {
     alert("Bulk generation started 🚀");
   };
 
-  const plan = user?.plan || "free";
+  const plan = "free"; 
   const limit = getLimit(plan);
 
   return (
