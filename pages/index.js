@@ -46,6 +46,9 @@ export default function Home() {
     localStorage.setItem("user", JSON.stringify(userData));
   }, []);
 
+  
+  
+  
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };

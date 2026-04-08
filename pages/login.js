@@ -8,16 +8,21 @@ export default function Login() {
 const handleLogin = () => {
   if (!email) return alert("Enter email");
 
-  // 🔥 CHECK IF USER EXISTS
+  // ✅ BASIC EMAIL VALIDATION
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; {
+
+  if (!emailRegex.test(email)) {
+    return alert("Please enter a valid email address");
+  }
+
+  // 🔥 CHECK EXISTING USER
   const existing = localStorage.getItem(`user_${email}`);
 
   let user;
 
   if (existing) {
-    // ✅ RETURNING USER → KEEP DATA
     user = JSON.parse(existing);
   } else {
-    // ✅ NEW USER → CREATE
     user = {
       email,
       plan: "free",
@@ -25,12 +30,15 @@ const handleLogin = () => {
       resetDate: new Date().toISOString(),
     };
 
-    // 🔥 SAVE USER DATABASE
     localStorage.setItem(`user_${email}`, JSON.stringify(user));
   }
 
-  // 🔥 SET ACTIVE SESSION
   localStorage.setItem("user", JSON.stringify(user));
+
+  window.dispatchEvent(new Event("storage"));
+
+  router.push("/");
+};
 
   // 🔥 UPDATE NAVBAR
   window.dispatchEvent(new Event("storage"));
@@ -43,12 +51,13 @@ const handleLogin = () => {
       <div style={styles.card}>
         <h1>Login / Register</h1>
 
-        <input
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+   <input
+    type="email"
+    placeholder="Enter your email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+   required
+    />
 
         <button style={styles.button} onClick={handleLogin}>
           Continue
@@ -57,6 +66,7 @@ const handleLogin = () => {
     </div>
   );
 }
+
 
 const styles = {
   container: {
