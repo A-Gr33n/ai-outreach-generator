@@ -25,20 +25,13 @@ export default function Login() {
 
   return (
     <div style={{ textAlign: "center", marginTop: "100px" }}>
-      <h1>Login</h1>
+      <h2>Please log in</h2>
+     
+     <button style={styles.loginBtn} onClick={() => router.push("/login")}>
+  Go to Login
+    </button>
 
-      <input
-        type="email"
-        placeholder="Enter real email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
 
-      <br /><br />
-
-      <button onClick={handleLogin}>Send Magic Link</button>
-
-      <p>{message}</p>
     </div>
   );
 
