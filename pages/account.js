@@ -1,19 +1,34 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
 
 export default function Account() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
+  const loadUser = async () => {
+    const { data } = await supabase.auth.getUser();
 
-    if (!stored) {
+    if (!data.user) {
       router.push("/login");
     } else {
-      setUser(JSON.parse(stored));
+      setUser({
+        email: data.user.email,
+        plan: "free", // 🔥 temp (we’ll connect DB later)
+      });
     }
-  }, []);
+  };
+
+  loadUser();
+}, []);
+
+const handleLogout = async () => {
+  await supabase.auth.signOut();
+  router.push("/login");
+};
+
+
 
   const handleManageSubscription = async () => {
   try {
@@ -70,6 +85,10 @@ export default function Account() {
 
         <button style={styles.manageBtn} onClick={handleManageSubscription}>
        Manage Subscription
+      </button>  
+
+      <button style={styles.logoutBtn} onClick={handleLogout}>
+      Logout
       </button>
       </div>
     </div>
@@ -127,6 +146,18 @@ const styles = {
   borderRadius: "8px",
   border: "none",
   background: "#6366f1",
+  color: "#fff",
+  fontWeight: "600",
+  cursor: "pointer",
+},
+
+logoutBtn: {
+  marginTop: "15px",
+  width: "100%",
+  padding: "12px",
+  borderRadius: "8px",
+  border: "none",
+  background: "#ef4444",
   color: "#fff",
   fontWeight: "600",
   cursor: "pointer",

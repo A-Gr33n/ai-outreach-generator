@@ -1,36 +1,31 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const router = useRouter();
 
-  const handleLogin = () => {
-    if (!email) return alert("Enter email");
+const handleLogin = async () => {
+  if (!email) return alert("Enter email");
 
-    // ✅ basic validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return alert("Enter a valid email");
-    }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return alert("Enter a valid email");
+  }
 
-    // ✅ check existing user
-    const existing = localStorage.getItem(`user_${email}`);
+  // 🔥 SUPABASE MAGIC LINK LOGIN
+  const { error } = await supabase.auth.signInWithOtp({
+    email: email,
+  });
 
-    let user;
-
-    if (existing) {
-      user = JSON.parse(existing);
-    } else {
-      user = {
-        email,
-        plan: "free",
-        usage: 0,
-        resetDate: new Date().toISOString(),
-      };
-
-      localStorage.setItem(`user_${email}`, JSON.stringify(user));
-    }
+  if (error) {
+    console.error(error);
+    alert("Error sending login email");
+  } else {
+    alert("Check your email to login 🚀");
+  }
+};
 
     // ✅ set active session
     localStorage.setItem("user", JSON.stringify(user));
