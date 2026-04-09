@@ -39,7 +39,7 @@ export default function Login() {
     window.dispatchEvent(new Event("storage"));
 
     // ✅ redirect
-    router.push("/");
+    router.push("/account");
   };
 
   return (

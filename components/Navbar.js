@@ -6,15 +6,31 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+
+    const loadUser = () => {
     const stored = localStorage.getItem("user");
     setUser(stored ? JSON.parse(stored) : null);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-    router.push("/");
   };
+  
+   loadUser();
+
+    window.addEventListener("storage", loadUser);
+
+  return () => window.removeEventListener("storage", loadUser);
+}, []);
+
+ const handleLogout = () => {
+  localStorage.removeItem("user");
+
+  // 🔥 trigger UI update
+  window.dispatchEvent(new Event("storage"));
+
+  setUser(null);
+
+  router.push("/login");
+};
+
+  
 
   return (
     <div style={styles.nav}>

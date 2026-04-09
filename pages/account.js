@@ -7,17 +7,14 @@ export default function Account() {
   const [user, setUser] = useState(null);
   const router = useRouter();
 
-  useEffect(() => {
+
+useEffect(() => {
   const stored = localStorage.getItem("user");
 
-  if (stored) {
-    setUser(JSON.parse(stored));
-  } else {
-    setUser(null); // don't redirect yet
+  if (!stored) {
+    router.push("/login");
   }
 }, []);
-
-
 
 
    if (user === null) {
