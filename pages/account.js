@@ -17,20 +17,8 @@ useEffect(() => {
 }, []);
 
 
-   if (user === null) {
-  return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
-      <h2>Please log in</h2>
-     
-     <button style={styles.loginBtn} onClick={() => router.push("/login")}>
-  Go to Login
-    </button>
-
-
-    </div>
-  );
 }
-
+{
   // Prevent SSR crash
   if (!user) return null;
 
