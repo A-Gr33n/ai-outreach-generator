@@ -2,17 +2,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
-useEffect(() => {
-  const loadUser = async () => {
-    const { data } = await supabase.auth.getUser();
-
-    if (data.user) {
-      setUser(data.user);
-    }
-  };
-
-  loadUser();
-}, []);
 
 export default function Home() {
   const router = useRouter();
@@ -23,6 +12,18 @@ export default function Home() {
     website: "",
     industry: "",
   });
+
+  useEffect(() => {
+  const loadUser = async () => {
+    const { data } = await supabase.auth.getUser();
+
+    if (data.user) {
+      setUser(data.user);
+    }
+  };
+
+  loadUser();
+}, []);
 
   const [email, setEmail] = useState("");
   const [user, setUser] = useState(null);
@@ -125,9 +126,9 @@ export default function Home() {
     alert("Bulk generation started 🚀");
   };
 
-  const plan = "free";
-  const usage = 0;
-  const limit = getLimit(plan);
+  const plan = user?.plan || "free";
+const usage = user?.usage || 0;
+const limit = getLimit(plan);
 
   return (
     <div style={styles.page}>
@@ -135,9 +136,9 @@ export default function Home() {
         <h1 style={styles.title}>AI Sales Outreach</h1>
 
         {/* USAGE */}
-        <p style={styles.usage}>
-          Usage: {usage} / 3 / {limit === Infinity ? "∞" : limit}
-        </p>
+       <p>
+       Usage: {usage} / {limit === Infinity ? "∞" : limit}
+       </p>
 
         {/* PLAN */}
         <div style={styles.planBox}>
