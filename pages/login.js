@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
-export default function Login() {
+export default function Login() { 
   const [email, setEmail] = useState("");
   const router = useRouter();
 
@@ -13,6 +13,7 @@ const handleLogin = async () => {
   if (!emailRegex.test(email)) {
     return alert("Enter a valid email");
   }
+  {
 
   // 🔥 SUPABASE MAGIC LINK LOGIN
   const { error } = await supabase.auth.signInWithOtp({
