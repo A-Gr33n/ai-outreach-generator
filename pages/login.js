@@ -16,9 +16,12 @@ const handleLogin = async () => {
   {
 
   // 🔥 SUPABASE MAGIC LINK LOGIN
-  const { error } = await supabase.auth.signInWithOtp({
-    email: email,
-  });
+ const { error } = await supabase.auth.signInWithOtp({
+  email,
+  options: {
+    emailRedirectTo: "https://aioutreachgenerator-aarons-projects-3a02c269.vercel.app//account",
+  },
+});
 
   if (error) {
     console.error(error);
