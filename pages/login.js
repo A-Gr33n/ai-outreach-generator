@@ -19,7 +19,7 @@ const handleLogin = async () => {
  const { error } = await supabase.auth.signInWithOtp({
   email,
   options: {
-    emailRedirectTo: "https://aioutreachgenerator-aarons-projects-3a02c269.vercel.app//account",
+    emailRedirectTo: "https://aioutreachgenerator.vercel.app//account",
   },
 });
 
