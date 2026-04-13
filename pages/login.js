@@ -6,28 +6,36 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const router = useRouter();
 
+  
+
   const handleLogin = async () => {
-    if (!email) return alert("Enter email");
+    if (!email) return alert("Enter email and password");
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return alert("Enter a valid email");
     }
 
-    const { error } = await supabase.auth.signInWithOtp({
+    const { data, error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         emailRedirectTo: "https://aioutreachgenerator.vercel.app/account",
       },
     });
 
+    
+
     if (error) {
       console.error(error);
       alert("Error sending login email");
     } else {
       alert("Check your email to login 🚀");
+          router.push("/account"); 
     }
   };
+
+  const [password, setPassword] = useState(""); // Add this at the top with your email state
+ 
 
   return (
     <div style={styles.page}>
@@ -35,10 +43,18 @@ export default function Login() {
         <h1>Login</h1>
 
         <input
-          type="email"
-          placeholder="Enter your email"
+          type="email" 
+          placeholder="Enter your email" 
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          style={styles.input}
+        />
+
+          <input
+          type="password" 
+          placeholder="Password" 
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
         />
 
