@@ -2,43 +2,31 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
-export default function Login() { 
+export default function Login() {
   const [email, setEmail] = useState("");
   const router = useRouter();
 
-const handleLogin = async () => {
-  if (!email) return alert("Enter email");
+  const handleLogin = async () => {
+    if (!email) return alert("Enter email");
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return alert("Enter a valid email");
-  }
-  {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return alert("Enter a valid email");
+    }
 
-  // 🔥 SUPABASE MAGIC LINK LOGIN
- const { error } = await supabase.auth.signInWithOtp({
-  email,
-  options: {
-    emailRedirectTo: "https://aioutreachgenerator.vercel.app//account",
-  },
-});
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: "https://aioutreachgenerator.vercel.app/account",
+      },
+    });
 
-  if (error) {
-    console.error(error);
-    alert("Error sending login email");
-  } else {
-    alert("Check your email to login 🚀");
-  }
-};
-
-    // ✅ set active session
-    localStorage.setItem("user", JSON.stringify(user));
-
-    // 🔥 IMPORTANT → trigger navbar update
-    window.dispatchEvent(new Event("storage"));
-
-    // ✅ redirect
-    router.push("/account");
+    if (error) {
+      console.error(error);
+      alert("Error sending login email");
+    } else {
+      alert("Check your email to login 🚀");
+    }
   };
 
   return (

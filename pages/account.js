@@ -7,60 +7,56 @@ export default function Account() {
   const router = useRouter();
 
   useEffect(() => {
-  const loadUser = async () => {
-    const { data } = await supabase.auth.getUser();
+    const loadUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
 
-    if (!data.user) {
-      router.push("/login");
-    } else {
-      setUser({
-        email: data.user.email,
-        plan: "free", // 🔥 temp (we’ll connect DB later)
+      if (error || !data.user) {
+        router.push("/login");
+      } else {
+        setUser({
+          email: data.user.email,
+          plan: "free", // temp
+        });
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      // 🔥 use Supabase user instead of localStorage
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) {
+        return alert("Not logged in");
+      }
+
+      const res = await fetch("/api/customer-portal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: data.user.id,
+        }),
       });
+
+      const resData = await res.json();
+      window.location.href = resData.url;
+
+    } catch (err) {
+      console.error(err);
+      alert("Error opening billing portal");
     }
   };
 
-  loadUser();
-}, []);
-
-const handleLogout = async () => {
-  await supabase.auth.signOut();
-  router.push("/login");
-};
-
-
-
-  const handleManageSubscription = async () => {
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!user?.customerId) {
-      return alert("No subscription found");
-    }
-
-    const res = await fetch("/api/customer-portal", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customerId: user.customerId,
-      }),
-    });
-
-    const data = await res.json();
-
-    window.location.href = data.url;
-
-  } catch (err) {
-    console.error(err);
-    alert("Error opening billing portal");
-  }
-};
-
-  if (!user) return null;
-
-  const plan = user.plan || "free";
+  if (!user) return <p>Loading...</p>;
 
   return (
     <div style={styles.page}>
@@ -73,7 +69,7 @@ const handleLogout = async () => {
 
         <p style={styles.text}>
           <strong>Plan:</strong>{" "}
-          <span style={styles.plan}>{plan}</span>
+          <span style={styles.plan}>{user.plan}</span>
         </p>
 
         <button
@@ -81,15 +77,15 @@ const handleLogout = async () => {
           onClick={() => router.push("/pricing")}
         >
           Upgrade Plan
-        </button> 
+        </button>
 
         <button style={styles.manageBtn} onClick={handleManageSubscription}>
-       Manage Subscription
-      </button>  
+          Manage Subscription
+        </button>
 
-      <button style={styles.logoutBtn} onClick={handleLogout}>
-      Logout
-      </button>
+        <button style={styles.logoutBtn} onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </div>
   );
@@ -140,26 +136,26 @@ const styles = {
   },
 
   manageBtn: {
-  marginTop: "20px",
-  width: "100%",
-  padding: "12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#6366f1",
-  color: "#fff",
-  fontWeight: "600",
-  cursor: "pointer",
-},
+    marginTop: "20px",
+    width: "100%",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "none",
+    background: "#6366f1",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
 
-logoutBtn: {
-  marginTop: "15px",
-  width: "100%",
-  padding: "12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#ef4444",
-  color: "#fff",
-  fontWeight: "600",
-  cursor: "pointer",
-},
+  logoutBtn: {
+    marginTop: "15px",
+    width: "100%",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "none",
+    background: "#ef4444",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
 };

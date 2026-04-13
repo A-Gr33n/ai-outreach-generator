@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
-
 export default function Home() {
   const router = useRouter();
 
@@ -13,22 +12,28 @@ export default function Home() {
     industry: "",
   });
 
-  useEffect(() => {
-  const loadUser = async () => {
-    const { data } = await supabase.auth.getUser();
-
-    if (data.user) {
-      setUser(data.user);
-    }
-  };
-
-  loadUser();
-}, []);
-
   const [email, setEmail] = useState("");
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
   const [csvFile, setCsvFile] = useState(null);
+
+  // ✅ LOAD USER (Supabase only — no localStorage)
+  useEffect(() => {
+    const loadUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error || !data.user) return;
+
+      setUser({
+        id: data.user.id,
+        email: data.user.email,
+        plan: "free",
+        usage: 0,
+      });
+    };
+
+    loadUser();
+  }, []);
 
   // ✅ PLAN LIMITS
   const getLimit = (plan) => {
@@ -38,36 +43,11 @@ export default function Home() {
     if (plan === "agency") return Infinity;
   };
 
-  // ✅ LOAD USER + RESET MONTHLY
-  useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (!stored) return;
-
-    let userData = JSON.parse(stored);
-
-    const now = new Date();
-    const resetDate = new Date(userData.resetDate);
-
-    if (
-      now.getMonth() !== resetDate.getMonth() ||
-      now.getFullYear() !== resetDate.getFullYear()
-    ) {
-      userData.usage = 0;
-      userData.resetDate = now.toISOString();
-    }
-
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-  }, []);
-
-  
-  
-  
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ SINGLE EMAIL GENERATE
+  // ✅ GENERATE EMAIL
   const generateEmail = async () => {
     if (!user) {
       alert("Login first");
@@ -90,27 +70,32 @@ export default function Home() {
       });
 
       const data = await res.json();
+
       setEmail(data.email);
 
-      const updatedUser = {
+      // ✅ SAVE EMAIL TO SUPABASE
+      await supabase.from("emails").insert([
+        {
+          user_id: user.id,
+          subject: "Outreach Email",
+          content: data.email,
+        },
+      ]);
+
+      // ✅ update usage (temporary frontend only)
+      setUser({
         ...user,
         usage: (user.usage || 0) + 1,
-      };
+      });
 
-      setUser(updatedUser);
-     // 🔥 SAVE ACTIVE USER
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-
-   // 🔥 SAVE TO USER DATABASE (by email)
-    localStorage.setItem(`user_${updatedUser.email}`, JSON.stringify(updatedUser));
-
-      setMessage("✅ Email generated");
-    } catch {
+      setMessage("✅ Email generated & saved");
+    } catch (err) {
+      console.error(err);
       setMessage("❌ Error generating email");
     }
   };
 
-  // ✅ BULK GENERATE (LOCKED FOR FREE/STARTER)
+  // ✅ BULK GENERATE (locked)
   const handleBulkGenerate = () => {
     if (!user) return router.push("/login");
 
@@ -122,25 +107,22 @@ export default function Home() {
       return alert("Upload CSV first");
     }
 
-    // 🚀 placeholder (you can connect backend later)
-    alert("Bulk generation started 🚀");
+    alert("Bulk generation coming soon 🚀");
   };
 
   const plan = user?.plan || "free";
-const usage = user?.usage || 0;
-const limit = getLimit(plan);
+  const usage = user?.usage || 0;
+  const limit = getLimit(plan);
 
   return (
     <div style={styles.page}>
       <div style={styles.container}>
         <h1 style={styles.title}>AI Sales Outreach</h1>
 
-        {/* USAGE */}
-       <p>
-       Usage: {usage} / {limit === Infinity ? "∞" : limit}
-       </p>
+        <p>
+          Usage: {usage} / {limit === Infinity ? "∞" : limit}
+        </p>
 
-        {/* PLAN */}
         <div style={styles.planBox}>
           <strong>Plan:</strong> {plan.toUpperCase()}
         </div>
@@ -179,7 +161,7 @@ const limit = getLimit(plan);
           </div>
         )}
 
-        {/* 🔥 BULK SECTION */}
+        {/* BULK */}
         <div style={styles.card}>
           <h2>📂 Bulk Email Generator</h2>
 
@@ -238,11 +220,6 @@ const styles = {
 
   title: {
     textAlign: "center",
-  },
-
-  usage: {
-    textAlign: "center",
-    fontWeight: "500",
   },
 
   planBox: {
