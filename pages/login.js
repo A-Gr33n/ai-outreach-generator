@@ -5,23 +5,20 @@ import { supabase } from "../lib/supabase";
 export default function Login() {
   const [email, setEmail] = useState("");
   const router = useRouter();
-
+  
+  const [password, setPassword] = useState(""); // Add this at the top with your email state
   
 
-  const handleLogin = async () => {
-    if (!email) return alert("Enter email and password");
+const handleLogin = async () => {
+  if (!email || !password) {
+    return alert("Enter email and password");
+  }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return alert("Enter a valid email");
-    }
-
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: "https://aioutreachgenerator.vercel.app/account",
-      },
-    });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+     emailRedirectTo: "https://aioutreachgenerator.vercel.app/account",
+    password,
+  });
 
     
 
@@ -34,7 +31,24 @@ export default function Login() {
     }
   };
 
-  const [password, setPassword] = useState(""); // Add this at the top with your email state
+  const handleSignup = async () => {
+  if (!email || !password) {
+    return alert("Enter email and password");
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) {
+    console.error(error);
+    alert(error.message);
+  } else {
+    alert("Account created! You can now log in.");
+  }
+};
+
  
 
   return (
@@ -60,6 +74,10 @@ export default function Login() {
 
         <button style={styles.button} onClick={handleLogin}>
           Continue
+        </button>
+
+        <button onClick={handleSignup} style={styles.button}>
+         Sign Up
         </button>
       </div>
     </div>
