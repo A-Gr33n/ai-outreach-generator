@@ -8,7 +8,6 @@ export default function Login() {
   
   const [password, setPassword] = useState(""); // Add this at the top with your email state
   
-
 const handleLogin = async () => {
   if (!email || !password) {
     return alert("Enter email and password");
@@ -16,20 +15,17 @@ const handleLogin = async () => {
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-     emailRedirectTo: "https://aioutreachgenerator.vercel.app/account",
     password,
   });
 
-    
-
-    if (error) {
-      console.error(error);
-      alert("Error sending login email");
-    } else {
-      alert("Check your email to login 🚀");
-          router.push("/account"); 
-    }
-  };
+  if (error) {
+    console.error(error);
+    alert("Invalid email or password");
+  } else {
+    alert("Logged in successfully 🚀");
+    router.push("/account");
+  }
+};
 
   const handleSignup = async () => {
   if (!email || !password) {
@@ -73,7 +69,7 @@ const handleLogin = async () => {
         />
 
         <button style={styles.button} onClick={handleLogin}>
-          Continue
+          Login 
         </button>
 
         <button onClick={handleSignup} style={styles.button}>
