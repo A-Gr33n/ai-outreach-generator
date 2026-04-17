@@ -6,6 +6,19 @@ export default function Pricing() {
   const [user, setUser] = useState(null);
   const [checked, setChecked] = useState(false); // 👈 prevent flicker
 
+ useEffect(() => {
+  const checkUser = async () => {
+    const { data } = await supabase.auth.getUser();
+
+    if (!data.user) {
+      router.push("/login");
+    }
+  };
+
+  checkUser();
+}, []);
+
+
   useEffect(() => {
     const stored = localStorage.getItem("user");
 
