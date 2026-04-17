@@ -48,6 +48,7 @@ const handleLogin = async () => {
  
 
   return (
+
     <div style={styles.page}>
       <div style={styles.card}>
         <h1>Login</h1>
@@ -71,10 +72,16 @@ const handleLogin = async () => {
         <button style={styles.button} onClick={handleLogin}>
           Login 
         </button>
-
-        <button onClick={handleSignup} style={styles.button}>
-         Sign Up
-        </button>
+      <p style={{ marginTop: "15px" }}>
+      Don't have an account?{" "}
+      <span
+      style={{ color: "blue", cursor: "pointer" }}
+      onClick={() => router.push("/signup")}
+  >
+    Sign up
+  </span>
+</p>
+      
       </div>
     </div>
   );
