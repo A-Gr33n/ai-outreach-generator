@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/xpD-zqW5kK3tj6Vr_wnZa/_buildManifest.js",
-    "static/xpD-zqW5kK3tj6Vr_wnZa/_ssgManifest.js"
+    "static/ZJsHDRwCl_2Xth13h71Iw/_buildManifest.js",
+    "static/ZJsHDRwCl_2Xth13h71Iw/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "rootMainFilesTree": {},
@@ -15,14 +15,13 @@
       "static/chunks/webpack-8910b414ea1af7e6.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/256-30a7558c463e6fa8.js",
-      "static/chunks/pages/index-d012ea604aad3299.js"
+      "static/chunks/pages/index-d06c6a9384a32c42.js"
     ],
     "/_app": [
       "static/chunks/webpack-8910b414ea1af7e6.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/pages/_app-8e6aeb5af6481645.js"
+      "static/chunks/pages/_app-8205701059819b7c.js"
     ],
     "/_error": [
       "static/chunks/webpack-8910b414ea1af7e6.js",
@@ -34,8 +33,7 @@
       "static/chunks/webpack-8910b414ea1af7e6.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/256-30a7558c463e6fa8.js",
-      "static/chunks/pages/account-b24b344262b74b59.js"
+      "static/chunks/pages/account-a96ff912dc5a61a8.js"
     ],
     "/how-to-use": [
       "static/chunks/webpack-8910b414ea1af7e6.js",
@@ -47,14 +45,19 @@
       "static/chunks/webpack-8910b414ea1af7e6.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/256-30a7558c463e6fa8.js",
-      "static/chunks/pages/login-89750833fe043907.js"
+      "static/chunks/pages/login-026d9cbef010a6bb.js"
     ],
     "/pricing": [
       "static/chunks/webpack-8910b414ea1af7e6.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/pages/pricing-9f105e79288d46ae.js"
+      "static/chunks/pages/pricing-47c7342d5ae852fc.js"
+    ],
+    "/signup": [
+      "static/chunks/webpack-8910b414ea1af7e6.js",
+      "static/chunks/framework-acd67e14855de5a2.js",
+      "static/chunks/main-828097cc9c01ffdd.js",
+      "static/chunks/pages/signup-c435073c232e364f.js"
     ],
     "/success": [
       "static/chunks/webpack-8910b414ea1af7e6.js",

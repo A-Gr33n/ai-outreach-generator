@@ -8,3 +8,9 @@ export default function MyApp({ Component, pageProps }) {
     </>
   );
 }
+
+const styles = {
+  page: {
+    minHeight: "100vh",
+  },
+};

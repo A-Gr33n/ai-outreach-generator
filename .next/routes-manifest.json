@@ -51,6 +51,12 @@
       "namedRegex": "^/pricing(?:/)?$"
     },
     {
+      "page": "/signup",
+      "regex": "^/signup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/signup(?:/)?$"
+    },
+    {
       "page": "/success",
       "regex": "^/success(?:/)?$",
       "routeKeys": {},

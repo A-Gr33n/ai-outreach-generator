@@ -68,3 +68,59 @@ export default function Navbar() {
     </div>
   );
 }
+
+const styles = {
+  nav: {
+    width: "100%",
+    padding: "15px 40px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    background: "#fff",
+    borderBottom: "1px solid #eee",
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
+  },
+
+  logo: {
+    margin: 0,
+    fontWeight: "700",
+    color: "#333",
+  },
+
+  links: {
+    display: "flex",
+    gap: "12px",
+    alignItems: "center",
+  },
+
+  navBtn: {
+    padding: "10px 16px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+    background: "#fff",
+    cursor: "pointer",
+    fontWeight: "500",
+  },
+
+  loginBtn: {
+    padding: "10px 18px",
+    borderRadius: "10px",
+    border: "none",
+    background: "linear-gradient(135deg, #4b4ded, #6c63ff)",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+
+  logoutBtn: {
+    padding: "10px 18px",
+    borderRadius: "10px",
+    border: "none",
+    background: "#ef4444",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+}
