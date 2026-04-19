@@ -12,6 +12,9 @@ const generateEmail = async () => {
     return;
   }
 
+  const data = await res.json();
+console.log("API RESPONSE:", data);
+
   if (plan === "free" && usage >= 5) {
     setMessage("❌ Free limit reached (5 emails). Upgrade to continue.");
     return;

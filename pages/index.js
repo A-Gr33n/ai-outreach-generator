@@ -17,7 +17,7 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [csvFile, setCsvFile] = useState(null);
 
-  // ✅ LOAD USER (Supabase only — no localStorage)
+  // ✅ LOAD USER
   useEffect(() => {
     const loadUser = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -44,20 +44,31 @@ export default function Home() {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  // ✅ GENERATE EMAIL
+  // ✅ GENERATE EMAIL (SAFE)
   const generateEmail = async () => {
+    // validation FIRST (safe place)
+    if (!form.name || !form.company) {
+      setMessage("❌ Please fill in name and company");
+      return;
+    }
+
     if (!user) {
       alert("Login first");
-      return router.push("/login");
+      router.push("/login");
+      return;
     }
 
     const limit = getLimit(user.plan);
 
     if ((user.usage || 0) >= limit) {
-      return setMessage(`❌ Limit reached (${limit}/month)`);
+      setMessage(`❌ Limit reached (${limit}/month)`);
+      return;
     }
 
     try {
@@ -71,9 +82,12 @@ export default function Home() {
 
       const data = await res.json();
 
+      if (!res.ok || !data.email) {
+        throw new Error(data.error || "No email returned");
+      }
+
       setEmail(data.email);
 
-      // ✅ SAVE EMAIL TO SUPABASE
       await supabase.from("emails").insert([
         {
           user_id: user.id,
@@ -82,20 +96,20 @@ export default function Home() {
         },
       ]);
 
-      // ✅ update usage (temporary frontend only)
-      setUser({
-        ...user,
-        usage: (user.usage || 0) + 1,
-      });
+      setUser((prev) => ({
+        ...prev,
+        usage: (prev?.usage || 0) + 1,
+      }));
 
       setMessage("✅ Email generated & saved");
     } catch (err) {
       console.error(err);
+      setEmail("");
       setMessage("❌ Error generating email");
     }
   };
 
-  // ✅ BULK GENERATE (locked)
+  // ✅ BULK GENERATE
   const handleBulkGenerate = () => {
     if (!user) return router.push("/login");
 
@@ -141,28 +155,31 @@ export default function Home() {
 
         {/* MESSAGE */}
         {message && (
-          <p style={{ ...styles.message, color: message.includes("❌") ? "red" : "green" }}>
+          <p
+            style={{
+              ...styles.message,
+              color: message.includes("❌") ? "red" : "green",
+            }}
+          >
             {message}
           </p>
         )}
 
         {/* OUTPUT */}
         {email && (
-  <div style={styles.card}>
-    <h3>Generated Email</h3>
+          <div style={styles.card}>
+            <h3>Generated Email</h3>
 
-    <pre style={styles.emailBox}>
-      {email}
-    </pre>
+            <pre style={styles.emailBox}>{email}</pre>
 
-    <button
-      style={styles.copyBtn}
-      onClick={() => navigator.clipboard.writeText(email)}
-    >
-      Copy Email
-    </button>
-  </div>
-)}
+            <button
+              style={styles.copyBtn}
+              onClick={() => navigator.clipboard.writeText(email)}
+            >
+              Copy Email
+            </button>
+          </div>
+        )}
 
         {/* BULK */}
         <div style={styles.card}>
@@ -181,8 +198,11 @@ export default function Home() {
           <button
             style={{
               ...styles.button,
-              opacity: (plan === "free" || plan === "starter") ? 0.5 : 1,
-              cursor: (plan === "free" || plan === "starter") ? "not-allowed" : "pointer",
+              opacity: plan === "free" || plan === "starter" ? 0.5 : 1,
+              cursor:
+                plan === "free" || plan === "starter"
+                  ? "not-allowed"
+                  : "pointer",
             }}
             disabled={plan === "free" || plan === "starter"}
             onClick={handleBulkGenerate}
@@ -204,6 +224,7 @@ export default function Home() {
   );
 }
 
+// styles unchanged
 const styles = {
   page: {
     minHeight: "100vh",
@@ -212,7 +233,6 @@ const styles = {
     alignItems: "center",
     background: "#f5f6fa",
   },
-
   container: {
     width: "100%",
     maxWidth: "500px",
@@ -220,18 +240,13 @@ const styles = {
     flexDirection: "column",
     gap: "20px",
   },
-
-  title: {
-    textAlign: "center",
-  },
-
+  title: { textAlign: "center" },
   planBox: {
     background: "#e3e8ff",
     padding: "15px",
     borderRadius: "12px",
     textAlign: "center",
   },
-
   card: {
     background: "#fff",
     padding: "20px",
@@ -241,13 +256,11 @@ const styles = {
     gap: "12px",
     boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
   },
-
   input: {
     padding: "12px",
     borderRadius: "8px",
     border: "1px solid #ddd",
   },
-
   button: {
     padding: "14px",
     borderRadius: "10px",
@@ -257,7 +270,6 @@ const styles = {
     fontWeight: "bold",
     cursor: "pointer",
   },
-
   uploadBox: {
     padding: "20px",
     border: "2px dashed #ccc",
@@ -265,7 +277,6 @@ const styles = {
     textAlign: "center",
     cursor: "pointer",
   },
-
   emailBox: {
     whiteSpace: "pre-wrap",
     background: "#f9f9f9",
@@ -274,7 +285,6 @@ const styles = {
     border: "1px solid #eee",
     fontSize: "14px",
   },
-
   copyBtn: {
     padding: "10px",
     borderRadius: "8px",
@@ -283,12 +293,10 @@ const styles = {
     color: "#fff",
     cursor: "pointer",
   },
-
   message: {
     textAlign: "center",
     fontWeight: "600",
   },
-
   upgradeBtn: {
     marginTop: "10px",
     padding: "12px",
