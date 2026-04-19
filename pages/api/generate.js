@@ -30,14 +30,10 @@ Return only the email.
       temperature: 1,
     });
 
-    console.log("🔍 FULL RESPONSE:", JSON.stringify(response, null, 2));
-
     const email = response?.choices?.[0]?.message?.content;
 
-    // 🔥 FIX: ALWAYS RETURN SOMETHING
+    // ✅ fallback if AI fails
     if (!email) {
-      console.log("⚠️ No email from AI, using fallback");
-
       return res.status(200).json({
         email: `Subject: Quick idea for ${company}
 
@@ -52,14 +48,14 @@ Yours sincerely,
       });
     }
 
-    res.status(200).json({ email });
+    return res.status(200).json({ email });
 
   } catch (err) {
     console.error("❌ SERVER ERROR:", err);
 
-    // 🔥 NEVER BREAK FRONTEND
-    res.status(200).json({
-      email: "Error generating email. Please try again.",
+    // 🔥 FIX: return REAL error (not fake email)
+    return res.status(500).json({
+      error: "Failed to generate email",
     });
   }
 }
