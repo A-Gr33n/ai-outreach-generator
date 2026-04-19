@@ -2,12 +2,10 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-
-export default function Pricing() { {
+export default function Pricing() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [checked, setChecked] = useState(false); // 👈 prevent flicker
-
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -16,35 +14,20 @@ export default function Pricing() { {
       if (!data.user) {
         alert("Please login to view pricing");
         router.push("/login");
+      } else {
+        setUser(data.user);
       }
+
+      setChecked(true);
     };
 
     checkUser();
   }, []);
 
-  return (
-    <div>
-      <h1>Pricing Page</h1>
-      {/* your pricing UI */}
-    </div>
-  );
-}
-
-
-  
-  // ⛔ prevent render before check finishes
+  // ⛔ wait until auth check finishes
   if (!checked) return null;
 
-  // ⛔ block page if not logged in
-  if (!user) return null;
-
   const handleUpgrade = (plan) => {
-    if (!user) {
-      alert("⚠️ Please login first");
-      router.push("/login");
-      return;
-    }
-
     const updatedUser = { ...user, plan };
     localStorage.setItem("user", JSON.stringify(updatedUser));
 
