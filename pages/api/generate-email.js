@@ -35,7 +35,11 @@ const generateEmail = async () => {
       throw new Error(data.error || "Failed to generate email");
     }
 
-    setEmail(data.email);
+    if (data.email && data.email.trim() !== "") {
+  setEmail(data.email);
+} else {
+  throw new Error("Empty email returned");
+}
 
     if (plan === "free") {
       const newUsage = Math.min(usage + 1, 5);
@@ -128,3 +132,5 @@ Make it personalized.
 
   }
 }
+
+console.log("API RESPONSE:", data);
