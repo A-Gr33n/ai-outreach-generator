@@ -12,4 +12,4 @@ Pitch this product:
 ${i}
 
 Make it personalized.
-`}]});b.status(200).json({email:m.choices[0].message.content})}catch(a){console.log(a),b.status(500).json({error:"OpenAI request failed"})}}d()}catch(a){d(a)}})},5600:a=>{a.exports=require("next/dist/compiled/next-server/pages-api.runtime.prod.js")},7984:a=>{a.exports=import("openai")}};var b=require("../../webpack-api-runtime.js");b.C(a);var c=b.X(0,[169],()=>b(b.s=1962));module.exports=c})();
+`}]});b.status(200).json({email:m.choices[0].message.content})}catch(a){console.log(a),b.status(500).json({error:"OpenAI request failed"})}}console.log("API RESPONSE:",data),d()}catch(a){d(a)}})},5600:a=>{a.exports=require("next/dist/compiled/next-server/pages-api.runtime.prod.js")},7984:a=>{a.exports=import("openai")}};var b=require("../../webpack-api-runtime.js");b.C(a);var c=b.X(0,[169],()=>b(b.s=1962));module.exports=c})();

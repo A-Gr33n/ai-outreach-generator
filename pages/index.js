@@ -148,18 +148,21 @@ export default function Home() {
 
         {/* OUTPUT */}
         {email && (
-          <div style={styles.card}>
-            <h3>Generated Email</h3>
-            <pre style={styles.emailBox}>{email}</pre>
+  <div style={styles.card}>
+    <h3>Generated Email</h3>
 
-            <button
-              style={styles.copyBtn}
-              onClick={() => navigator.clipboard.writeText(email)}
-            >
-              Copy Email
-            </button>
-          </div>
-        )}
+    <pre style={styles.emailBox}>
+      {email}
+    </pre>
+
+    <button
+      style={styles.copyBtn}
+      onClick={() => navigator.clipboard.writeText(email)}
+    >
+      Copy Email
+    </button>
+  </div>
+)}
 
         {/* BULK */}
         <div style={styles.card}>

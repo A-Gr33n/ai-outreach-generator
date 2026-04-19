@@ -8,7 +8,7 @@ Write ONE unique cold outreach email.
 - Sound natural and human
 
 Return only the email.
-`,g=await h.chat.completions.create({model:"gpt-4o-mini",messages:[{role:"user",content:f}],temperature:1});console.log("\uD83D\uDD0D FULL RESPONSE:",JSON.stringify(g,null,2));let i=g?.choices?.[0]?.message?.content;if(!i)return console.log("⚠️ No email from AI, using fallback"),b.status(200).json({email:`Subject: Quick idea for ${d}
+`,g=await h.chat.completions.create({model:"gpt-4o-mini",messages:[{role:"user",content:f}],temperature:1}),i=g?.choices?.[0]?.message?.content;if(!i)return b.status(200).json({email:`Subject: Quick idea for ${d}
 
 Hi ${c},
 
@@ -17,4 +17,4 @@ I came across ${d} and wanted to reach out. I believe there’s an opportunity t
 Would you be open to a quick chat?
 
 Yours sincerely,  
-[Your Name]`});b.status(200).json({email:i})}catch(a){console.error("❌ SERVER ERROR:",a),b.status(200).json({email:"Error generating email. Please try again."})}}d()}catch(a){d(a)}})},7984:a=>{a.exports=import("openai")}};var b=require("../../webpack-api-runtime.js");b.C(a);var c=b.X(0,[169],()=>b(b.s=3362));module.exports=c})();
+[Your Name]`});return b.status(200).json({email:i})}catch(a){return console.error("❌ SERVER ERROR:",a),b.status(500).json({error:"Failed to generate email"})}}d()}catch(a){d(a)}})},7984:a=>{a.exports=import("openai")}};var b=require("../../webpack-api-runtime.js");b.C(a);var c=b.X(0,[169],()=>b(b.s=3362));module.exports=c})();
