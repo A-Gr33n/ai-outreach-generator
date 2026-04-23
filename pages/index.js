@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
+
 export default function Home() {
   const router = useRouter();
 
@@ -110,23 +111,69 @@ export default function Home() {
   };
 
   // ✅ BULK GENERATE
-  const handleBulkGenerate = () => {
-    if (!user) return router.push("/login");
+const handleBulkGenerate = async () => {
+  if (!user) return router.push("/login");
 
-    if (user.plan === "free" || user.plan === "starter") {
-      return alert("Upgrade to PRO to use Bulk Generator");
-    }
+  if (user.plan === "free" || user.plan === "starter") {
+    return alert("Upgrade to PRO to use Bulk Generator");
+  }
 
-    if (!csvFile) {
-      return alert("Upload CSV first");
-    }
+  if (!csvFile) {
+    return alert("Upload CSV first");
+  }
 
-    alert("Bulk generation coming soon 🚀");
-  };
+  const text = await csvFile.text();
+
+  const { parseCSV } = await import("../lib/csvParser");
+  const leads = parseCSV(text);
+
+  setMessage("⏳ Generating bulk emails...");
+
+  try {
+    const res = await fetch("/api/bulk-generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ leads }),
+    });
+
+    const data = await res.json();
+
+    setGeneratedEmails(data.results);
+    setMessage("✅ Bulk emails generated");
+
+  } catch (err) {
+    console.error(err);
+    setMessage("❌ Bulk generation failed");
+  }
+};
+
+const downloadCSV = () => {
+  if (!generatedEmails.length) return;
+
+  const headers = Object.keys(generatedEmails[0]).join(",");
+  const rows = generatedEmails.map(obj =>
+    Object.values(obj).map(v => `"${v}"`).join(",")
+  );
+
+  const csv = [headers, ...rows].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "campaign.csv";
+  a.click();
+};
+
+
 
   const plan = user?.plan || "free";
   const usage = user?.usage || 0;
   const limit = getLimit(plan);
+  const [generatedEmails, setGeneratedEmails] = useState([]);
 
   return (
     <div style={styles.page}>
@@ -218,6 +265,12 @@ export default function Home() {
               🔒 Upgrade to unlock Bulk
             </button>
           )}
+
+          {generatedEmails.length > 0 && (
+  <button style={styles.button} onClick={downloadCSV}>
+    📥 Download Campaign CSV
+  </button>
+)}
         </div>
       </div>
     </div>

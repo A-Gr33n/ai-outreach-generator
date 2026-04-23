@@ -11,6 +11,7 @@ export default async function handler(req, res) {
 
   try {
     const { name, company, industry } = req.body;
+    const { campaignName, userId } = req.body;
 
     const prompt = `
 Write ONE unique cold outreach email.
@@ -36,6 +37,12 @@ Return only the email.
     if (!email) {
       return res.status(200).json({
         email: `Subject: Quick idea for ${company}
+
+        const { data: campaign } = await supabase
+  .from("campaigns")
+  .insert([{ user_id: userId, name: campaignName }])
+  .select()
+  .single();
 
 Hi ${name},
 

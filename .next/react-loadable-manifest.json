@@ -30,5 +30,11 @@
     "files": [
       "static/chunks/123.f3d27f38429d3ab5.js"
     ]
+  },
+  "pages\\index.js -> ../lib/csvParser": {
+    "id": 6676,
+    "files": [
+      "static/chunks/676.0ab365578c631ab0.js"
+    ]
   }
 }
