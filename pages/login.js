@@ -48,6 +48,8 @@ const handleLogin = async () => {
 
 
   return (
+    <div style={styles.page}>
+  <div style={styles.container}></div>
 <div style={styles.card}>
   <h1 style={styles.title}>Login</h1>
 
@@ -83,6 +85,8 @@ const handleLogin = async () => {
     </a>
   </p>
 </div>
+ </div>
+
   );
 }
 
@@ -147,4 +151,18 @@ link: {
   fontWeight: "600",
   textDecoration: "none",
 },
+
+page: {
+  minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "#f5f6fa",
+},
+
+container: {
+  width: "100%",
+  maxWidth: "400px",
+},
+
 };
