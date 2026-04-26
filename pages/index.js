@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
-
 export default function Home() {
   const router = useRouter();
 
@@ -17,37 +16,48 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
   const [csvFile, setCsvFile] = useState(null);
+  const [generatedEmails, setGeneratedEmails] = useState([]); // ✅ moved here
 
-  // ✅ LOAD USER
- useEffect(() => {
-  const loadUser = async () => {
-    const { data, error } = await supabase.auth.getUser();
+  // ✅ LOAD USER FROM DB
+  useEffect(() => {
+    const loadUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) return;
 
-    if (error || !data.user) return;
+      const { data: profile } = await supabase
+        .from("users")
+        .select("plan, usage")
+        .eq("id", data.user.id)
+        .single();
 
-    // ✅ get real user data from DB
-    const { data: profile, error: profileError } = await supabase
-      .from("users")
-      .select("plan, usage")
-      .eq("id", data.user.id)
-      .single();
+      setUser({
+        id: data.user.id,
+        email: data.user.email,
+        plan: profile?.plan || "free",
+        usage: profile?.usage || 0,
+      });
+    };
 
-    if (profileError) {
-      console.error(profileError);
-    }
+    loadUser();
+  }, []);
 
-    setUser({
-      id: data.user.id,
-      email: data.user.email,
-      plan: profile?.plan || "free",
-      usage: profile?.usage || 0,
-    });
-  };
+  // ✅ KEEP USER LOGGED IN (fix Stripe redirect logout)
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          setUser((prev) => ({
+            ...prev,
+            id: session.user.id,
+            email: session.user.email,
+          }));
+        }
+      }
+    );
 
-  loadUser();
-}, []);
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
-  // ✅ PLAN LIMITS
   const getLimit = (plan) => {
     if (plan === "free") return 3;
     if (plan === "starter") return 100;
@@ -62,9 +72,8 @@ export default function Home() {
     }));
   };
 
-  // ✅ GENERATE EMAIL (SAFE)
+  // ✅ SINGLE EMAIL
   const generateEmail = async () => {
-    // validation FIRST (safe place)
     if (!form.name || !form.company) {
       setMessage("❌ Please fill in name and company");
       return;
@@ -121,70 +130,71 @@ export default function Home() {
     }
   };
 
-  // ✅ BULK GENERATE
-const handleBulkGenerate = async () => {
-  if (!user) return router.push("/login");
+  // ✅ BULK GENERATE (FIXED)
+  const handleBulkGenerate = async () => {
+    if (!user) return router.push("/login");
 
-  if (user.plan === "free" || user.plan === "starter") {
-    return alert("Upgrade to PRO to use Bulk Generator");
-  }
+    if (user.plan === "free" || user.plan === "starter") {
+      return alert("Upgrade to PRO to use Bulk Generator");
+    }
 
-  if (!csvFile) {
-    return alert("Upload CSV first");
-  }
+    if (!csvFile) {
+      return alert("Upload CSV first");
+    }
 
-  const text = await csvFile.text();
+    const text = await csvFile.text();
+    const { parseCSV } = await import("../lib/csvParser");
+    const leads = parseCSV(text);
 
-  const { parseCSV } = await import("../lib/csvParser");
-  const leads = parseCSV(text);
+    setMessage("⏳ Generating bulk emails...");
 
-  setMessage("⏳ Generating bulk emails...");
+    try {
+      const res = await fetch("/api/bulk-generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          leads,
+          product: "AI Outreach Tool", // ✅ add your product
+          userId: user.id,            // ✅ REQUIRED
+          campaignName: "Campaign 1", // ✅ REQUIRED
+        }),
+      });
 
-  try {
-    const res = await fetch("/api/bulk-generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ leads }),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
+      setGeneratedEmails(data.results);
+      setMessage("✅ Bulk emails generated");
+    } catch (err) {
+      console.error(err);
+      setMessage("❌ Bulk generation failed");
+    }
+  };
 
-    setGeneratedEmails(data.results);
-    setMessage("✅ Bulk emails generated");
+  // ✅ DOWNLOAD CSV
+  const downloadCSV = () => {
+    if (!generatedEmails.length) return;
 
-  } catch (err) {
-    console.error(err);
-    setMessage("❌ Bulk generation failed");
-  }
-};
+    const headers = Object.keys(generatedEmails[0]).join(",");
+    const rows = generatedEmails.map((obj) =>
+      Object.values(obj).map((v) => `"${v}"`).join(",")
+    );
 
-const downloadCSV = () => {
-  if (!generatedEmails.length) return;
+    const csv = [headers, ...rows].join("\n");
 
-  const headers = Object.keys(generatedEmails[0]).join(",");
-  const rows = generatedEmails.map(obj =>
-    Object.values(obj).map(v => `"${v}"`).join(",")
-  );
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
 
-  const csv = [headers, ...rows].join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "campaign.csv";
-  a.click();
-};
-
-
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "campaign.csv";
+    a.click();
+  };
 
   const plan = user?.plan || "free";
   const usage = user?.usage || 0;
   const limit = getLimit(plan);
-  const [generatedEmails, setGeneratedEmails] = useState([]);
 
   return (
     <div style={styles.page}>
@@ -213,29 +223,16 @@ const downloadCSV = () => {
 
         {/* MESSAGE */}
         {message && (
-          <p
-            style={{
-              ...styles.message,
-              color: message.includes("❌") ? "red" : "green",
-            }}
-          >
+          <p style={{ ...styles.message, color: message.includes("❌") ? "red" : "green" }}>
             {message}
           </p>
         )}
 
-        {/* OUTPUT */}
+        {/* SINGLE OUTPUT */}
         {email && (
           <div style={styles.card}>
             <h3>Generated Email</h3>
-
             <pre style={styles.emailBox}>{email}</pre>
-
-            <button
-              style={styles.copyBtn}
-              onClick={() => navigator.clipboard.writeText(email)}
-            >
-              Copy Email
-            </button>
           </div>
         )}
 
@@ -254,41 +251,35 @@ const downloadCSV = () => {
           </label>
 
           <button
-            style={{
-              ...styles.button,
-              opacity: plan === "free" || plan === "starter" ? 0.5 : 1,
-              cursor:
-                plan === "free" || plan === "starter"
-                  ? "not-allowed"
-                  : "pointer",
-            }}
+            style={styles.button}
             disabled={plan === "free" || plan === "starter"}
             onClick={handleBulkGenerate}
           >
             Generate From CSV
           </button>
 
-          {(plan === "free" || plan === "starter") && (
-            <button
-              style={styles.upgradeBtn}
-              onClick={() => router.push("/pricing")}
-            >
-              🔒 Upgrade to unlock Bulk
-            </button>
-          )}
-
+          {/* 🔥 SHOW RESULTS */}
           {generatedEmails.length > 0 && (
-  <button style={styles.button} onClick={downloadCSV}>
-    📥 Download Campaign CSV
-  </button>
-)}
+            <div>
+              <h3>Bulk Results</h3>
+              {generatedEmails.map((e, i) => (
+                <div key={i} style={styles.card}>
+                  <strong>{e.name}</strong>
+                  <pre style={styles.emailBox}>{e.email}</pre>
+                </div>
+              ))}
+
+              <button style={styles.button} onClick={downloadCSV}>
+                📥 Download CSV
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-// styles unchanged
 const styles = {
   page: {
     minHeight: "100vh",
@@ -349,26 +340,8 @@ const styles = {
     border: "1px solid #eee",
     fontSize: "14px",
   },
-  copyBtn: {
-    padding: "10px",
-    borderRadius: "8px",
-    border: "none",
-    background: "#00b894",
-    color: "#fff",
-    cursor: "pointer",
-  },
   message: {
     textAlign: "center",
     fontWeight: "600",
-  },
-  upgradeBtn: {
-    marginTop: "10px",
-    padding: "12px",
-    borderRadius: "10px",
-    border: "none",
-    fontWeight: "600",
-    cursor: "pointer",
-    background: "linear-gradient(135deg, #ff9f43, #ff6b6b)",
-    color: "#fff",
   },
 };
