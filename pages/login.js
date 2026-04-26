@@ -48,46 +48,41 @@ const handleLogin = async () => {
 
 
   return (
+<div style={styles.card}>
+  <h1 style={styles.title}>Login</h1>
 
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1>Login</h1>
+  <input
+    type="email"
+    placeholder="Enter your email"
+    style={styles.input}
+    onChange={(e) => setEmail(e.target.value)}
+  />
 
-        <input
-          type="email" 
-          placeholder="Enter your email" 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
-        />
+  <input
+    type="password"
+    placeholder="Password"
+    style={styles.input}
+    onChange={(e) => setPassword(e.target.value)}
+  />
 
-          <input
-          type="password" 
-          placeholder="Password" 
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
-        />
+  {/* ✅ BETTER POSITION */}
+  <div style={styles.forgotWrapper}>
+    <a href="/forgot-password" style={styles.forgotLink}>
+      Forgot Password?
+    </a>
+  </div>
 
-        <button style={styles.button} onClick={handleLogin}>
-          Login 
-        </button>
-      <p style={{ marginTop: "15px" }}>
-      Don't have an account?{" "}
-      <span
-      style={{ color: "blue", cursor: "pointer" }}
-      onClick={() => router.push("/signup")}
-  >
-    Sign up
-  </span>
+  <button style={styles.button} onClick={handleLogin}>
+    Login
+  </button>
 
-  <Link href="/forgot-password">
-  Forgot Password?
-</Link>
-</p>
-      
-      </div>
-    </div>
+  <p style={styles.footerText}>
+    Don't have an account?{" "}
+    <a href="/signup" style={styles.link}>
+      Sign up
+    </a>
+  </p>
+</div>
   );
 }
 
@@ -128,4 +123,28 @@ const styles = {
     fontWeight: "600",
     cursor: "pointer",
   },
+
+  forgotWrapper: {
+  width: "100%",
+  textAlign: "right",
+  marginTop: "-8px",
+},
+
+forgotLink: {
+  fontSize: "13px",
+  color: "#6c63ff",
+  textDecoration: "none",
+  fontWeight: "500",
+},
+
+footerText: {
+  textAlign: "center",
+  marginTop: "10px",
+},
+
+link: {
+  color: "#6c63ff",
+  fontWeight: "600",
+  textDecoration: "none",
+},
 };
