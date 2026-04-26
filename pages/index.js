@@ -19,22 +19,33 @@ export default function Home() {
   const [csvFile, setCsvFile] = useState(null);
 
   // ✅ LOAD USER
-  useEffect(() => {
-    const loadUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
+ useEffect(() => {
+  const loadUser = async () => {
+    const { data, error } = await supabase.auth.getUser();
 
-      if (error || !data.user) return;
+    if (error || !data.user) return;
 
-      setUser({
-        id: data.user.id,
-        email: data.user.email,
-        plan: "free",
-        usage: 0,
-      });
-    };
+    // ✅ get real user data from DB
+    const { data: profile, error: profileError } = await supabase
+      .from("users")
+      .select("plan, usage")
+      .eq("id", data.user.id)
+      .single();
 
-    loadUser();
-  }, []);
+    if (profileError) {
+      console.error(profileError);
+    }
+
+    setUser({
+      id: data.user.id,
+      email: data.user.email,
+      plan: profile?.plan || "free",
+      usage: profile?.usage || 0,
+    });
+  };
+
+  loadUser();
+}, []);
 
   // ✅ PLAN LIMITS
   const getLimit = (plan) => {
