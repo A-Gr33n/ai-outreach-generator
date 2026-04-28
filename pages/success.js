@@ -1,40 +1,57 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { supabase } from "../lib/supabase";
 
 export default function Success() {
   const router = useRouter();
+  const [plan, setPlan] = useState("");
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const updatePlan = async () => {
+      const { data } = await supabase.auth.getUser();
 
-    if (storedUser) {
-      let user = null;
+      if (!data.user) {
+        router.push("/login");
+        return;
+      }
 
-   if (typeof window !== "undefined") {
-  const stored = localStorage.getItem("user");
-  user = stored ? JSON.parse(stored) : null;
-}
+      // ✅ get plan from URL (passed from Stripe)
+      const selectedPlan = router.query.plan || "pro";
 
-      const updatedUser = {
-        ...user,
-        plan: "starter",
-      };
+      setPlan(selectedPlan);
 
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      // ✅ update DB (THIS is what makes it persist)
+      const { error } = await supabase
+        .from("users")
+        .update({ plan: selectedPlan })
+        .eq("id", data.user.id);
+
+      if (error) {
+        console.error("Error updating plan:", error);
+      }
+
+      // redirect after short delay
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    };
+
+    if (router.isReady) {
+      updatePlan();
     }
-  }, []);
+  }, [router.isReady]);
 
   return (
     <div style={styles.page}>
       <div style={styles.card}>
         <h1>🎉 Payment Successful</h1>
         <p>Your subscription has been activated.</p>
-        <p><strong>Current Plan: STARTER</strong></p>
 
-        <button
-          style={styles.button}
-          onClick={() => router.push("/")}
-        >
+        <p>
+          <strong>Current Plan: {plan.toUpperCase()}</strong>
+        </p>
+
+        <button style={styles.button} onClick={() => router.push("/")}>
           Go Back to Generator
         </button>
       </div>

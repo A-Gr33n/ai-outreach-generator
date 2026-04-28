@@ -35,6 +35,8 @@ export default function Pricing() {
     router.push("/");
   };
 
+  
+
   return (
     <div style={styles.page}>
       <h1 style={styles.title}>Pricing Plans</h1>
