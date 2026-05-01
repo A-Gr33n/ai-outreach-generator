@@ -4,13 +4,17 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <>
       <Navbar />
-      <Component {...pageProps} />
+
+      <main
+        style={{
+          minHeight: "calc(100vh - 80px)", // keeps content centered below navbar
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Component {...pageProps} />
+      </main>
     </>
   );
 }
-
-const styles = {
-  page: {
-    minHeight: "100vh",
-  },
-};

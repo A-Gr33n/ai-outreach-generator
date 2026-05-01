@@ -196,7 +196,24 @@ export default function Home() {
   const usage = user?.usage || 0;
   const limit = getLimit(plan);
 
+  const handleManageBilling = async () => {
+  const res = await fetch("/api/stripe/portal", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: user.email }),
+  });
+
+  const data = await res.json();
+
+  if (data.url) {
+    window.location.href = data.url;
+  } else {
+    alert("Error opening billing portal");
+  }
+};
+
   return (
+    
     <div style={styles.page}>
       <div style={styles.container}>
         <h1 style={styles.title}>AI Sales Outreach</h1>
@@ -272,6 +289,8 @@ export default function Home() {
               <button style={styles.button} onClick={downloadCSV}>
                 📥 Download CSV
               </button>
+
+              
             </div>
           )}
         </div>
@@ -281,12 +300,14 @@ export default function Home() {
 }
 
 const styles = {
+
+  
   page: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#f5f6fa",
+     minHeight: "100vh",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  background: "#f5f5f5",
   },
   container: {
     width: "100%",

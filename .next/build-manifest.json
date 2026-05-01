@@ -5,8 +5,8 @@
   "devFiles": [],
   "ampDevFiles": [],
   "lowPriorityFiles": [
-    "static/fctoUOYO8CugmLUv_8k_2/_buildManifest.js",
-    "static/fctoUOYO8CugmLUv_8k_2/_ssgManifest.js"
+    "static/ZELg7A3vZFBLFrAbae7u2/_buildManifest.js",
+    "static/ZELg7A3vZFBLFrAbae7u2/_ssgManifest.js"
   ],
   "rootMainFiles": [],
   "rootMainFilesTree": {},
@@ -15,13 +15,13 @@
       "static/chunks/webpack-31b714068af76eca.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/pages/index-d1c3101aceb23d9d.js"
+      "static/chunks/pages/index-07851dc2c870b8fd.js"
     ],
     "/_app": [
       "static/chunks/webpack-31b714068af76eca.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/pages/_app-8205701059819b7c.js"
+      "static/chunks/pages/_app-50e425c11c604c52.js"
     ],
     "/_error": [
       "static/chunks/webpack-31b714068af76eca.js",
@@ -39,7 +39,7 @@
       "static/chunks/webpack-31b714068af76eca.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/pages/forgot-password-f05839cbfe55b4c2.js"
+      "static/chunks/pages/forgot-password-872794781687cb60.js"
     ],
     "/how-to-use": [
       "static/chunks/webpack-31b714068af76eca.js",
@@ -51,7 +51,7 @@
       "static/chunks/webpack-31b714068af76eca.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/pages/login-48bf3e198f2ebc0d.js"
+      "static/chunks/pages/login-72dc755f01af54b6.js"
     ],
     "/pricing": [
       "static/chunks/webpack-31b714068af76eca.js",
@@ -63,7 +63,7 @@
       "static/chunks/webpack-31b714068af76eca.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/pages/reset-password-5788f8c6978e3719.js"
+      "static/chunks/pages/reset-password-1169ac9244b1ead8.js"
     ],
     "/signup": [
       "static/chunks/webpack-31b714068af76eca.js",
@@ -75,7 +75,7 @@
       "static/chunks/webpack-31b714068af76eca.js",
       "static/chunks/framework-acd67e14855de5a2.js",
       "static/chunks/main-828097cc9c01ffdd.js",
-      "static/chunks/pages/success-34a90f9a319de013.js"
+      "static/chunks/pages/success-a230f3eec186ae6a.js"
     ]
   },
   "ampFirstPages": []

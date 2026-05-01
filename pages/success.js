@@ -4,55 +4,46 @@ import { supabase } from "../lib/supabase";
 
 export default function Success() {
   const router = useRouter();
-  const [plan, setPlan] = useState("");
+  const { plan } = router.query;
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!plan) return;
+
     const updatePlan = async () => {
       const { data } = await supabase.auth.getUser();
 
-      if (!data.user) {
+      if (!data?.user) {
         router.push("/login");
         return;
       }
 
-      // ✅ get plan from URL (passed from Stripe)
-      const selectedPlan = router.query.plan || "pro";
-
-      setPlan(selectedPlan);
-
-      // ✅ update DB (THIS is what makes it persist)
-      const { error } = await supabase
+      // ✅ UPDATE DATABASE (THIS is what was missing)
+      await supabase
         .from("users")
-        .update({ plan: selectedPlan })
+        .update({ plan })
         .eq("id", data.user.id);
 
-      if (error) {
-        console.error("Error updating plan:", error);
-      }
-
-      // redirect after short delay
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
+      setLoading(false);
     };
 
-    if (router.isReady) {
-      updatePlan();
-    }
-  }, [router.isReady]);
+    updatePlan();
+  }, [plan]);
+
+  if (loading) {
+    return <p style={{ textAlign: "center" }}>Updating your plan...</p>;
+  }
 
   return (
     <div style={styles.page}>
       <div style={styles.card}>
         <h1>🎉 Payment Successful</h1>
-        <p>Your subscription has been activated.</p>
-
-        <p>
-          <strong>Current Plan: {plan.toUpperCase()}</strong>
-        </p>
+        <p>Your subscription is now active.</p>
+        <p><strong>Plan: {plan?.toUpperCase()}</strong></p>
 
         <button style={styles.button} onClick={() => router.push("/")}>
-          Go Back to Generator
+          Go to Dashboard
         </button>
       </div>
     </div>
@@ -71,18 +62,15 @@ const styles = {
     background: "#fff",
     padding: "40px",
     borderRadius: "16px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
     textAlign: "center",
-    maxWidth: "400px",
-    width: "100%",
   },
   button: {
     marginTop: "20px",
-    padding: "12px 20px",
-    borderRadius: "8px",
-    border: "none",
-    background: "linear-gradient(90deg, #5f6afc, #6c63ff)",
+    padding: "12px",
+    background: "#6c63ff",
     color: "#fff",
+    border: "none",
+    borderRadius: "8px",
     cursor: "pointer",
   },
 };
